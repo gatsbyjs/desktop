@@ -62,7 +62,7 @@ async function launchSite(program: IProgram): Promise<void | ChildProcess> {
     proc = undefined
   }
 
-  const port = detectPort(8000)
+  const port = await detectPort(8000)
 
   console.log(`Running on port ${port}`)
 

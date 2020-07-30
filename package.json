@@ -46,8 +46,8 @@
     "watch:renderer": "gatsby develop --port=8079",
     "watch:main": "microbundle -i app/main.ts --target=node -o lib/main.js --no-pkg-main --tsconfig=app/tsconfig.json -f cjs watch",
     "build:main": "microbundle -i app/main.ts --target=node -o lib/main.js --no-pkg-main --tsconfig=app/tsconfig.json -f cjs build",
-    "build:worker": "microbundle -i worker/launcher.ts -o lib/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net build",
-    "watch:worker": "microbundle -i worker/launcher.ts -o lib/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net watch",
+    "build:worker": "microbundle -i worker/launcher.ts -o static/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net build",
+    "watch:worker": "microbundle -i worker/launcher.ts -o static/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net watch",
     "run:app": "electron --remote-debugging-port=8315 .",
     "watch:app": "GATSBY_DEVELOP_URL=http://localhost:8079 yarn run:app",
     "develop": "FORCE_COLOR=1 npm-run-all -l build:main --parallel watch:*"

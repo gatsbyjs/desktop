@@ -1,6 +1,6 @@
 import type { IProgram } from "gatsby/internal"
 import { Action, StructuredEventType } from "../util/ipc-types"
-const workerUrl = require(`file-loader!../../lib/launcher.js`)
+const workerUrl = `/launcher.js`
 
 export class GatsbySite {
   runner?: Worker
