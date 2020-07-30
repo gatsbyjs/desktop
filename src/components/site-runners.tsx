@@ -9,16 +9,39 @@ import React, {
 import { GatsbySite } from "../controllers/site"
 import { Action } from "../util/ipc-types"
 
+interface IRunnerContext {
+  sites: Map<string, GatsbySite>
+  addSite?: (site: GatsbySite) => void
+  removeSite?: (site: GatsbySite) => void
+}
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const RunnerContext = createContext(new Map<string, GatsbySite>())
+const RunnerContext = createContext<IRunnerContext>({ sites: new Map() })
 
 export function RunnerProvider({
   children,
 }: {
   children: ReactNode
 }): JSX.Element {
+  const [sites, setSites] = useState(new Map<string, GatsbySite>())
+  const addSite = useCallback(
+    (site: GatsbySite) => {
+      sites.set(site.root, site)
+      setSites(sites)
+    },
+    [sites]
+  )
+
+  const removeSite = useCallback(
+    (site: GatsbySite) => {
+      sites.delete(site.root)
+      setSites(sites)
+    },
+    [sites]
+  )
+
   return (
-    <RunnerContext.Provider value={new Map<string, GatsbySite>()}>
+    <RunnerContext.Provider value={{ sites, addSite, removeSite }}>
       {children}
     </RunnerContext.Provider>
   )
@@ -26,33 +49,24 @@ export function RunnerProvider({
 
 export function useSiteRunners(): {
   sites: Map<string, GatsbySite>
-  launchSite: (path: string) => GatsbySite | undefined
-  stopSite: (path: string) => void
+  addSite: (path: string) => GatsbySite | undefined
 } {
-  const sites = useContext(RunnerContext)
+  const { sites, addSite: addSiteToContext } = useContext(RunnerContext)
 
-  const launchSite = useCallback(
+  const addSite = useCallback(
     (root: string): GatsbySite | undefined => {
-      if (sites.has(root)) {
+      if (sites?.has(root)) {
         console.log(`got one`)
         return sites.get(root)
       }
       const site = new GatsbySite(root)
-      sites.set(root, site)
-      site.start()
+      addSiteToContext?.(site)
       return site
     },
     [sites]
   )
 
-  const stopSite = useCallback(
-    (site: string) => {
-      sites.get(site)?.stop()
-    },
-    [sites]
-  )
-
-  return { sites, launchSite, stopSite }
+  return { sites, addSite }
 }
 
 export function useSiteRunnerStatus(

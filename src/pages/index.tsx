@@ -2,26 +2,27 @@ import React, { useCallback, useState } from "react"
 import { useSiteRunners, RunnerProvider } from "../components/site-runners"
 import { GatsbySite } from "../controllers/site"
 import { SitePreview } from "../components/site-preview"
+import { SiteBrowser } from "../components/site-browser"
 
 const root = `/Users/matt/Repos/trexible`
 
 export default function App(): JSX.Element {
   console.log(`GATSBY!`)
 
-  const { launchSite, sites } = useSiteRunners()
+  const { addSite, sites } = useSiteRunners()
 
   const [site, setSite] = useState<GatsbySite>()
 
   const { logs, status } = site ?? { logs: [], status: `Loading` }
   console.log({ logs, status })
   const launch = useCallback(() => {
-    const newSite = launchSite(root)
+    const newSite = addSite(root)
+    newSite?.start()
     console.log({ newSite })
     setSite(newSite)
   }, [setSite])
 
   const stop = useCallback(() => {
-    console.log(`stoppping`, site)
     site?.stop()
   }, [site])
 
@@ -29,6 +30,9 @@ export default function App(): JSX.Element {
     <RunnerProvider>
       <div>
         <h1>💜 OMG Gatsby! 💜</h1>
+        <SiteBrowser onSelect={(): void => {}}>
+          Browse for a Gatsby site
+        </SiteBrowser>
         {site ? (
           <button onClick={stop}>Stop</button>
         ) : (
