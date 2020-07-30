@@ -3,6 +3,7 @@ import fs from "fs"
 import { spawn, ChildProcess } from "child_process"
 import type { PackageJson } from "gatsby"
 import path from "path"
+import detectPort from "detect-port"
 interface ILaunchEventPayload {
   type: "launch"
   program: IProgram
@@ -61,9 +62,13 @@ async function launchSite(program: IProgram): Promise<void | ChildProcess> {
     proc = undefined
   }
 
+  const port = detectPort(8000)
+
+  console.log(`Running on port ${port}`)
+
   proc = spawn(
     path.join(program.directory, `node_modules`, `.bin`, `gatsby`),
-    [`develop`, `--port=8005`],
+    [`develop`, `--port=${port}`],
     {
       stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
       cwd: program.directory,
