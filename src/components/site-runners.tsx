@@ -6,7 +6,7 @@ import React, {
   useState,
   useEffect,
 } from "react"
-import { GatsbySite } from "../controllers/site"
+import { GatsbySite, ISiteInfo } from "../controllers/site"
 import { Action } from "../util/ipc-types"
 
 interface IRunnerContext {
@@ -27,7 +27,7 @@ export function RunnerProvider({
   const addSite = useCallback(
     (site: GatsbySite) => {
       sites.set(site.root, site)
-      setSites(sites)
+      setSites(new Map(sites))
     },
     [sites]
   )
@@ -35,7 +35,7 @@ export function RunnerProvider({
   const removeSite = useCallback(
     (site: GatsbySite) => {
       sites.delete(site.root)
-      setSites(sites)
+      setSites(new Map(sites))
     },
     [sites]
   )
@@ -49,23 +49,22 @@ export function RunnerProvider({
 
 export function useSiteRunners(): {
   sites: Map<string, GatsbySite>
-  addSite: (path: string) => GatsbySite | undefined
+  addSite: (siteInfo: ISiteInfo) => GatsbySite | undefined
 } {
   const { sites, addSite: addSiteToContext } = useContext(RunnerContext)
 
   const addSite = useCallback(
-    (root: string): GatsbySite | undefined => {
-      if (sites?.has(root)) {
-        console.log(`got one`)
-        return sites.get(root)
+    (siteInfo: ISiteInfo): GatsbySite | undefined => {
+      if (sites?.has(siteInfo.path)) {
+        console.log(`Already got one`)
+        return sites.get(siteInfo.path)
       }
-      const site = new GatsbySite(root)
+      const site = new GatsbySite(siteInfo)
       addSiteToContext?.(site)
       return site
     },
-    [sites]
+    [sites, addSiteToContext]
   )
-
   return { sites, addSite }
 }
 
@@ -82,8 +81,8 @@ export function useSiteRunnerStatus(
 
   useEffect(() => {
     theSite?.onMessage(update)
-    return (): void => theSite.offMessage(update)
-  }, [])
+    return (): void => theSite?.offMessage(update)
+  }, [theSite])
 
   return { logs, status }
 }
