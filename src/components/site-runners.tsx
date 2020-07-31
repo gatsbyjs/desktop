@@ -9,6 +9,10 @@ import React, {
 import { GatsbySite, ISiteInfo } from "../controllers/site"
 import { Action } from "../util/ipc-types"
 
+/**
+ * This module uses shared context to store the list of user sites.
+ */
+
 interface IRunnerContext {
   sites: Map<string, GatsbySite>
   addSite?: (site: GatsbySite) => void
@@ -17,7 +21,9 @@ interface IRunnerContext {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const RunnerContext = createContext<IRunnerContext>({ sites: new Map() })
-
+/**
+ * Wraps the site root element in gatsby-browser
+ */
 export function RunnerProvider({
   children,
 }: {
@@ -47,6 +53,9 @@ export function RunnerProvider({
   )
 }
 
+/**
+ * Handles the list of sites, and functions to add and remove them
+ */
 export function useSiteRunners(): {
   sites: Map<string, GatsbySite>
   addSite: (siteInfo: ISiteInfo) => GatsbySite | undefined
@@ -68,6 +77,9 @@ export function useSiteRunners(): {
   return { sites, addSite }
 }
 
+/**
+ * Gets the status of an individual site
+ */
 export function useSiteRunnerStatus(
   theSite: GatsbySite
 ): { logs: Array<string>; status: string | undefined } {

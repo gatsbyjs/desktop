@@ -70,10 +70,13 @@ async function launchSite(program: IProgram): Promise<number> {
 
   console.log(`Running on port ${port}`)
 
+  // Runs `gatsby develop` in the site root
   proc = spawn(
     path.join(program.directory, `node_modules`, `.bin`, `gatsby`),
     [`develop`, `--port=${port}`],
     {
+      // The Gatsby process detects the IPC channel and uses it to send
+      // structured logs
       stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
       cwd: program.directory,
     }
@@ -89,6 +92,7 @@ async function launchSite(program: IProgram): Promise<number> {
   return port
 }
 
+// Messages from the parent renderer window
 onmessage = async (message: DevelopEvent): Promise<void> => {
   const { data } = message
   switch (data.type) {

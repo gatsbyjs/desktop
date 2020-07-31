@@ -18,6 +18,8 @@ export function SiteBrowser({
 }: IProps): JSX.Element {
   const browse = useCallback(async () => {
     console.log(`browsing`)
+    // Sends a essage to the main process asking for a file dialog.
+    // It also verifies that it's a Gatsby site before returning it.
     const result: ISiteInfo | ISiteError | undefined = await ipcRenderer.invoke(
       `browse-for-site`,
       {}

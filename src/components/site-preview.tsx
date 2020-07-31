@@ -6,6 +6,10 @@ interface IProps {
   site: GatsbySite
 }
 
+/**
+ * The item in the list of sites
+ */
+
 export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
   const { logs, status } = useSiteRunnerStatus(site)
 

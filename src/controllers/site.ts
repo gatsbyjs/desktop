@@ -8,6 +8,10 @@ export interface ISiteInfo {
   packageJson: PackageJson
   warning?: string
 }
+
+/**
+ * Represents a single user Gatsby site
+ */
 export class GatsbySite {
   runner?: Worker
   logs: Array<string> = []
@@ -23,6 +27,11 @@ export class GatsbySite {
     this.root = siteInfo.path
     this.packageJson = siteInfo.packageJson
   }
+
+  /**
+   * Spawns a Worker to run `gateby develop` and sets up listeners to
+   * receive logs
+   */
 
   public start(): void {
     this.logs = []
@@ -62,6 +71,10 @@ export class GatsbySite {
     this.runner = undefined
     this.status = `STOPPED`
   }
+
+  /**
+   * Handles structured logs from the site
+   */
 
   handleMessage(action: Action): void {
     console.log(`LOG`, action)
