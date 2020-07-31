@@ -18,7 +18,7 @@ export default function App(): JSX.Element {
   )
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" m={4}>
       <Flex flexDirection="row">
         <span>Icon goes here</span>
         {!!siteList.length && addSiteButton}
