@@ -25,6 +25,7 @@ async function start(): Promise<void> {
 
   const mb = menubar({
     dir,
+    icon: `assets/IconTemplate.png`,
     // If we're running develop we pass in a URL, otherwise use the one
     // of the express server we just started
     index: process.env.GATSBY_DEVELOP_URL || `http://localhost:${port}`,
