@@ -1,6 +1,7 @@
 import React, { HTMLAttributes, useCallback } from "react"
 import { ipcRenderer } from "electron"
 import { ISiteInfo } from "../controllers/site"
+import { Button } from "gatsby-interface"
 
 interface IProps extends HTMLAttributes<HTMLButtonElement> {
   onSelectSite: (siteInfo: ISiteInfo) => void
@@ -37,5 +38,5 @@ export function SiteBrowser({
     console.log({ result })
   }, [onSelectSite])
 
-  return <button onClick={browse} {...props} />
+  return <Button size="M" onClick={browse} {...props} />
 }
