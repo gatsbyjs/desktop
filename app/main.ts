@@ -4,6 +4,11 @@ import { ipcMain, dialog } from "electron"
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
+import {
+  hasGatsbyInstalled,
+  loadPackageJson,
+  hasGatsbyDependency,
+} from "./utils"
 
 const dir = path.resolve(__dirname, `..`)
 
@@ -20,6 +25,8 @@ async function start(): Promise<void> {
 
   const mb = menubar({
     dir,
+    // If we're running develop we pass in a URL, otherwise use the one
+    // of the express server we just started
     index: process.env.GATSBY_DEVELOP_URL || `http://localhost:${port}`,
     browserWindow: {
       webPreferences: {
@@ -28,18 +35,37 @@ async function start(): Promise<void> {
       },
     },
   })
-
+  // This request comes from the renderer
   ipcMain.handle(`browse-for-site`, async () => {
     console.log(`Browsing for site`)
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: [`openDirectory`],
     })
-    if (canceled) {
+    if (canceled || !filePaths?.length) {
       return undefined
     }
-    console.log({ filePaths })
-    // TODO: check it's a Gatsby site here
-    return filePaths
+
+    const path = filePaths[0]
+    try {
+      const packageJson = await loadPackageJson(path)
+      // i.e. actually installed in node_modules
+      if (await hasGatsbyInstalled(path)) {
+        return { packageJson, path }
+      }
+      // Has a dependency but it hasn't been installed
+      if (hasGatsbyDependency(packageJson)) {
+        return {
+          packageJson,
+          path,
+          warning: `The site ${packageJson.name} is a Gatsby site, but needs dependencies to be installed before it can be started`,
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return {
+      error: `The selected folder is not a Gatsby site. Please try another`,
+    }
   })
 
   mb.on(`ready`, () => {

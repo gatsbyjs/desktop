@@ -4,6 +4,12 @@ import { spawn, ChildProcess } from "child_process"
 import type { PackageJson } from "gatsby"
 import path from "path"
 import detectPort from "detect-port"
+
+/**
+ * This is a Worker, spawned by the main renderer process. There is one of these
+ * spawned for each user site that we launch. It handles the actual long-runnning
+ * `gatsby develop` process.
+ */
 interface ILaunchEventPayload {
   type: "launch"
   program: IProgram
@@ -20,7 +26,6 @@ interface ILaunchEvent extends MessageEvent {
 type DevelopEvent = IStopEvent | ILaunchEvent
 
 async function readJSON<T = unknown>(filePath: string): Promise<T> {
-  console.log(`reading`, filePath)
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, `utf8`, (err, data) => {
       if (err) {
@@ -36,24 +41,23 @@ async function isGatsbySite(root: string): Promise<boolean> {
     const packageJson = await readJSON<PackageJson>(
       `/${root}/node_modules/gatsby/package.json`
     )
-    console.log({ packageJson })
-    return packageJson.name === `gatsby`
+    return packageJson?.name === `gatsby`
   } catch (e) {
-    console.log({ e })
+    console.warn({ e })
     return false
   }
 }
 
 let proc: ChildProcess | undefined
 
-async function launchSite(program: IProgram): Promise<void | ChildProcess> {
+async function launchSite(program: IProgram): Promise<number> {
   if (!(await isGatsbySite(program.directory))) {
     postMessage({
       type: `error`,
       message: `${program.directory} is not a Gatsby site`,
     })
     console.log(`Not a gatsby site`)
-    return void 0
+    return 0
   }
   console.log(`Is a gatsby site. Launching`)
 
@@ -66,10 +70,13 @@ async function launchSite(program: IProgram): Promise<void | ChildProcess> {
 
   console.log(`Running on port ${port}`)
 
+  // Runs `gatsby develop` in the site root
   proc = spawn(
     path.join(program.directory, `node_modules`, `.bin`, `gatsby`),
     [`develop`, `--port=${port}`],
     {
+      // The Gatsby process detects the IPC channel and uses it to send
+      // structured logs
       stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
       cwd: program.directory,
     }
@@ -82,20 +89,24 @@ async function launchSite(program: IProgram): Promise<void | ChildProcess> {
   proc.stdout?.on(`data`, (data) => console.log(data))
 
   proc.on(`message`, (message) => postMessage({ type: `message`, message }))
-  return proc
+  return port
 }
 
+// Messages from the parent renderer window
 onmessage = async (message: DevelopEvent): Promise<void> => {
-  console.log(`received`, message)
   const { data } = message
-  switch (data?.type) {
+  switch (data.type) {
     case `launch`:
-      console.log(`launching`)
       await launchSite(data.program)
       postMessage(`Hi`)
       break
 
     case `stop`:
-      proc?.kill()
+      if (proc?.connected) {
+        proc.kill()
+        proc = undefined
+      } else {
+        console.log(`Not running`)
+      }
   }
 }

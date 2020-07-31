@@ -1,6 +1,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable quotes */
+
+/**
+ * Structured logs types. This is taken from Cloud.
+ */
+
 export enum StructuredLogLevel {
   Log = `LOG`,
   Warning = `WARNING`,

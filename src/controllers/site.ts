@@ -1,31 +1,49 @@
 import type { IProgram } from "gatsby/internal"
 import { Action, StructuredEventType } from "../util/ipc-types"
+import { PackageJson } from "gatsby"
 const workerUrl = `/launcher.js`
 
+export interface ISiteInfo {
+  path: string
+  packageJson: PackageJson
+  warning?: string
+}
+
+/**
+ * Represents a single user Gatsby site
+ */
 export class GatsbySite {
   runner?: Worker
   logs: Array<string> = []
-  status?: string
-
+  status = `STOPPED`
+  root: string
+  packageJson: PackageJson
   activities = new Map<string, any>()
+  port?: number
 
   private _listeners = new Set<(action: Action, site: GatsbySite) => void>()
 
-  constructor(public root: string) {}
+  constructor(siteInfo: ISiteInfo) {
+    this.root = siteInfo.path
+    this.packageJson = siteInfo.packageJson
+  }
+
+  /**
+   * Spawns a Worker to run `gateby develop` and sets up listeners to
+   * receive logs
+   */
 
   public start(): void {
+    this.logs = []
+    this.activities.clear()
+    this.status = `STARTING`
     const program: Partial<IProgram> = {
       directory: this.root,
     }
-    if (!program.directory) {
-      console.error(`No valid directory`)
-      return
-    }
+    this.runner = new Worker(workerUrl)
 
-    const runner = new Worker(workerUrl)
-
-    runner.postMessage({ type: `launch`, program })
-    runner.onmessage = (e): void => {
+    this.runner.postMessage({ type: `launch`, program })
+    this.runner.onmessage = (e): void => {
       console.log(`Message received from worker`, e.data)
       if (e.data?.type === `message` && e.data?.message?.type == `LOG_ACTION`) {
         this.handleMessage(e.data?.message?.action)
@@ -51,7 +69,12 @@ export class GatsbySite {
     }
     this.runner.postMessage({ type: `stop` })
     this.runner = undefined
+    this.status = `STOPPED`
   }
+
+  /**
+   * Handles structured logs from the site
+   */
 
   handleMessage(action: Action): void {
     console.log(`LOG`, action)
