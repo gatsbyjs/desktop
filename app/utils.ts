@@ -18,6 +18,6 @@ export async function loadPackageJson(root: string): Promise<PackageJson> {
 }
 
 export function hasGatsbyDependency(packageJson: PackageJson): boolean {
-  const { dependencies = {}, devDependencies = {} } = packageJson
-  return !!{ ...dependencies, ...devDependencies }.gatsby
+  const { dependencies, devDependencies } = packageJson
+  return !!(dependencies?.gatsby || devDependencies?.gatsby)
 }

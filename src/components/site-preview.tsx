@@ -18,7 +18,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
 
   return (
     <section>
-      <p>{site.packageJson?.name ?? `Unnamed site`}</p>
+      <p>{site?.packageJson?.name ?? `Unnamed site`}</p>
       <p>Status: {status}</p>
       {/* TODO: We can do this better by properly keeping track of running status */}
       {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (

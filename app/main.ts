@@ -47,14 +47,12 @@ async function start(): Promise<void> {
     }
 
     const path = filePaths[0]
-    // i.e. actually installed in node_modules
-    if (await hasGatsbyInstalled(path)) {
-      const packageJson = await loadPackageJson(path)
-      return { packageJson, path }
-    }
-
     try {
       const packageJson = await loadPackageJson(path)
+      // i.e. actually installed in node_modules
+      if (await hasGatsbyInstalled(path)) {
+        return { packageJson, path }
+      }
       // Has a dependency but it hasn't been installed
       if (hasGatsbyDependency(packageJson)) {
         return {
