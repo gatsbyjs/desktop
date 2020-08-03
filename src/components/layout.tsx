@@ -1,6 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "theme-ui"
-import { Flex } from "strict-ui"
+import { jsx, Flex } from "theme-ui"
 
 export function Layout({
   children,
@@ -8,8 +7,8 @@ export function Layout({
   children: React.ReactNode
 }): JSX.Element {
   return (
-    <Flex flexDirection="column">
-      <main>{children}</main>
+    <Flex m={4} css={{ flexDirection: `column` }}>
+      {children}
     </Flex>
   )
 }

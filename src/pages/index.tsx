@@ -6,6 +6,7 @@ import { SiteBrowser } from "../components/site-browser"
 import { useMemo } from "react"
 import { EmptyState, Text } from "gatsby-interface"
 import { useCallback } from "react"
+import { Layout } from "../components/layout"
 
 export default function App(): JSX.Element {
   const { addSite, sites } = useSiteRunners()
@@ -22,9 +23,9 @@ export default function App(): JSX.Element {
   )
 
   return (
-    <Flex m={4} css={{ flexDirection: `column` }}>
+    <Layout>
       <Flex css={{ justifyContent: `space-between` }}>
-        <Text as={`span`}>Icon goes here</Text>
+        <Text as="span">Icon goes here</Text>
         {!!siteList.length && addSiteButton}
       </Flex>
       {siteList.length ? (
@@ -37,6 +38,6 @@ export default function App(): JSX.Element {
           primaryAction={addSiteButton}
         />
       )}
-    </Flex>
+    </Layout>
   )
 }
