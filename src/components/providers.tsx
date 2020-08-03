@@ -1,0 +1,32 @@
+/** @jsx jsx */
+import { jsx, ThemeProvider, merge, Theme } from "theme-ui"
+import { getTheme } from "gatsby-interface"
+import { RunnerProvider } from "./site-runners"
+import { ReactNode } from "react"
+const baseTheme = getTheme()
+
+// The cast is because there is a breaking change to the typings,
+// between theme-ui versions, switching from arrays to readonly tuples
+const theme = merge((baseTheme as unknown) as Theme, {
+  colors: {
+    background: baseTheme.colors.primaryBackground,
+  },
+  fontWeights: {
+    "500": 500,
+  },
+  borders: {
+    none: `none`,
+    default: `1px solid ${baseTheme.colors.whiteFade[20]}`,
+    sixtywhite: `1px solid ${baseTheme.colors.whiteFade[40]}`,
+    white: `1px solid ${baseTheme.colors.white}`,
+    grey: `1px solid ${baseTheme.colors.grey[30]}`,
+  },
+})
+
+export function Providers({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <RunnerProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </RunnerProvider>
+  )
+}

@@ -1,8 +1,9 @@
-import React, { HTMLAttributes, useCallback } from "react"
+import React, { useCallback } from "react"
 import { ipcRenderer } from "electron"
 import { ISiteInfo } from "../controllers/site"
+import { Button, ButtonProps } from "gatsby-interface"
 
-interface IProps extends HTMLAttributes<HTMLButtonElement> {
+interface IProps extends ButtonProps {
   onSelectSite: (siteInfo: ISiteInfo) => void
   onSiteError: (message?: string) => void
 }
@@ -21,8 +22,7 @@ export function SiteBrowser({
     // Sends a message to the main process asking for a file dialog.
     // It also verifies that it's a Gatsby site before returning it.
     const result: ISiteInfo | ISiteError | undefined = await ipcRenderer.invoke(
-      `browse-for-site`,
-      {}
+      `browse-for-site`
     )
     if (!result) {
       return
@@ -37,5 +37,5 @@ export function SiteBrowser({
     console.log({ result })
   }, [onSelectSite])
 
-  return <button onClick={browse} {...props} />
+  return <Button size="M" onClick={browse} {...props} />
 }
