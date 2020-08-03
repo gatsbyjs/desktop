@@ -5,3 +5,4 @@ lib
 out/
 # These are compiled from TypeScript source
 static/launcher.*
+.DS_Store

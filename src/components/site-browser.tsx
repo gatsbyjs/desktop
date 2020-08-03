@@ -1,9 +1,9 @@
-import React, { HTMLAttributes, useCallback } from "react"
+import React, { useCallback } from "react"
 import { ipcRenderer } from "electron"
 import { ISiteInfo } from "../controllers/site"
-import { Button } from "gatsby-interface"
+import { Button, ButtonProps } from "gatsby-interface"
 
-interface IProps extends HTMLAttributes<HTMLButtonElement> {
+interface IProps extends ButtonProps {
   onSelectSite: (siteInfo: ISiteInfo) => void
   onSiteError: (message?: string) => void
 }

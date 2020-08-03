@@ -1,4 +1,7 @@
-import React, { PropsWithChildren, useCallback } from "react"
+/** @jsx jsx */
+import { jsx, Grid, Box, Flex, Theme } from "theme-ui"
+import { Text, Button } from "gatsby-interface"
+import { PropsWithChildren, useCallback } from "react"
 import { GatsbySite } from "../controllers/site"
 import { useSiteRunnerStatus } from "./site-runners"
 
@@ -17,25 +20,44 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
   const start = useCallback(() => site?.start(), [site])
 
   return (
-    <section>
-      <p>{site?.packageJson?.name ?? `Unnamed site`}</p>
-      <p>Status: {status}</p>
-      {/* TODO: We can do this better by properly keeping track of running status */}
-      {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (
-        <button onClick={start}>Start</button>
-      ) : (
-        <button onClick={stop}>Stop</button>
-      )}
-
+    <Flex
+      as={`section`}
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      sx={{
+        border: `grey`,
+        borderRadius: 2,
+        flexDirection: `column`,
+        my: 4,
+        p: 4,
+      }}
+    >
+      <Flex css={{ justifyContent: `space-between` }}>
+        <Text as={`span`} variant="EMPHASIZED">
+          {site?.packageJson?.name ?? `Unnamed site`}
+        </Text>
+        {/* TODO: We can do this better by properly keeping track of running status */}
+        {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (
+          <Button size="M" variant="SECONDARY" onClick={start}>
+            Start
+          </Button>
+        ) : (
+          <Button size="M" variant="SECONDARY" onClick={stop}>
+            Stop
+          </Button>
+        )}
+      </Flex>
+      <Text>{status}</Text>
       {!!logs?.length && (
         <details>
           <ul>
             {logs?.map((item, idx) => (
-              <li key={idx}>{item}</li>
+              <li key={idx}>
+                <Text as="span">{item}</Text>
+              </li>
             ))}
           </ul>
         </details>
       )}
-    </section>
+    </Flex>
   )
 }

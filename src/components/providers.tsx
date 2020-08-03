@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react"
+/** @jsx jsx */
+import { jsx, ThemeProvider as ThemeUIProvider } from "theme-ui"
 import { ThemeProvider, getTheme } from "gatsby-interface"
-import { ThemeProvider as ThemeUIProvider } from "strict-ui"
 import { RunnerProvider } from "./site-runners"
+import { ReactNode } from "react"
 const baseTheme = getTheme()
 
 const theme = {
@@ -19,6 +20,7 @@ const theme = {
     default: `1px solid ${baseTheme.colors.whiteFade[20]}`,
     sixtywhite: `1px solid ${baseTheme.colors.whiteFade[40]}`,
     white: `1px solid ${baseTheme.colors.white}`,
+    grey: `1px solid ${baseTheme.colors.grey[30]}`,
   },
   sizes: {
     // NOTE(@mxstbr): Hacks around issues with strict-ui that I have to fix upstream eventually
