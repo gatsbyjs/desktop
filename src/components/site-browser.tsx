@@ -33,8 +33,6 @@ export function SiteBrowser({
     }
 
     onSelectSite(result)
-
-    console.log({ result })
   }, [onSelectSite])
 
   return <Button size="M" onClick={browse} {...props} />

@@ -1,6 +1,11 @@
 import type { IProgram } from "gatsby/internal"
 import { Action, StructuredEventType } from "../util/ipc-types"
 import { PackageJson } from "gatsby"
+import {
+  createServiceLock,
+  getService,
+} from "gatsby-core-utils/dist/service-lock"
+
 const workerUrl = `/launcher.js`
 
 export interface ISiteInfo {
@@ -19,6 +24,7 @@ export class GatsbySite {
   root: string
   packageJson: PackageJson
   activities = new Map<string, any>()
+  running = false
   port?: number
 
   private _listeners = new Set<(action: Action, site: GatsbySite) => void>()
@@ -26,6 +32,9 @@ export class GatsbySite {
   constructor(siteInfo: ISiteInfo) {
     this.root = siteInfo.path
     this.packageJson = siteInfo.packageJson
+    if (this.root) {
+      this.saveMetadataToServiceConfig()
+    }
   }
 
   /**
@@ -52,6 +61,31 @@ export class GatsbySite {
         )
       }
     }
+  }
+
+  public async loadFromServiceConfig(): Promise<void> {
+    // Remove this cast when the types are fixed
+    const service = ((await getService(
+      this.root,
+      `developproxy`
+    )) as unknown) as { port: number }
+    if (service) {
+      this.running = true
+      this.port = service.port
+    } else {
+      this.running = false
+    }
+  }
+
+  public async saveMetadataToServiceConfig(
+    updateTime?: boolean
+  ): Promise<void> {
+    // const service = getService(this.root, `metadata`)
+    return createServiceLock(this.root, `metadata`, {
+      name: this.packageJson.name,
+      sitePath: this.root,
+      lastRun: Date.now(),
+    }).then((unlock) => unlock?.())
   }
 
   public onMessage(handler: (action: Action, site: GatsbySite) => void): void {
