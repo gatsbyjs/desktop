@@ -70,6 +70,7 @@
     "appId": "com.gatsbyjs.desktop",
     "copyright": "Copyright © 2020 Gatsby Inc.",
     "icon": "assets/icon.png",
+    "files": ["public/**/*", "lib/**/*", "assets/IconTemplate*"],
     "mac": {
       "darkModeSupport": true,
       "target": "dmg",
