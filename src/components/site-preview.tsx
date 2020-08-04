@@ -34,8 +34,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         <Text as={`span`} variant="EMPHASIZED">
           {site?.packageJson?.name ?? `Unnamed site`}
         </Text>
-        {/* TODO: We can do this better by properly keeping track of running status */}
-        {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (
+        {!running ? (
           <Button
             size="S"
             variant="SECONDARY"

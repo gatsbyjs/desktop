@@ -29,3 +29,24 @@ jobs:
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Upload artifact - Mac
+        if: startsWith(matrix.os, 'macOS')
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Gatsby Desktop.dmg"
+          path: dist/*.dmg
+
+      - name: Upload artifact - Windows
+        if: startsWith(matrix.os, 'Windows')
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Gatsby Desktop Setup.exe"
+          path: dist/*.exe
+
+      - name: Upload artifact - Linux
+        if: startsWith(matrix.os, 'Ubuntu')
+        uses: actions/upload-artifact@v2
+        with:
+          name: "gatsby-desktop.snap"
+          path: dist/*.snap
