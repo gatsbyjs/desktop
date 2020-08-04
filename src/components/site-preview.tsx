@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Grid, Box, Flex, Theme } from "theme-ui"
+import { jsx, Flex } from "theme-ui"
 import { Text, Button } from "gatsby-interface"
 import { PropsWithChildren, useCallback } from "react"
 import { GatsbySite } from "../controllers/site"
@@ -14,7 +14,7 @@ interface IProps {
  */
 
 export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { logs, status } = useSiteRunnerStatus(site)
+  const { logs, status, running, port } = useSiteRunnerStatus(site)
 
   const stop = useCallback(() => site?.stop(), [site])
   const start = useCallback(() => site?.start(), [site])
@@ -22,7 +22,6 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
   return (
     <Flex
       as={`section`}
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       sx={{
         border: `grey`,
         borderRadius: 2,
@@ -35,8 +34,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         <Text as={`span`} variant="EMPHASIZED">
           {site?.packageJson?.name ?? `Unnamed site`}
         </Text>
-        {/* TODO: We can do this better by properly keeping track of running status */}
-        {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (
+        {!running ? (
           <Button size="M" variant="SECONDARY" onClick={start}>
             Start
           </Button>
@@ -47,6 +45,9 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         )}
       </Flex>
       <Text>{status}</Text>
+      <Text>
+        {running ? `running` : `stopped`} :{port}
+      </Text>
       {!!logs?.length && (
         <details>
           <ul>
