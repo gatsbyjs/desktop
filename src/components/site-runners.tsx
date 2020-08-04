@@ -6,8 +6,7 @@ import React, {
   useState,
   useEffect,
 } from "react"
-import { GatsbySite, ISiteInfo } from "../controllers/site"
-import { Action } from "../util/ipc-types"
+import { GatsbySite, ISiteInfo, ISiteStatus } from "../controllers/site"
 
 /**
  * This module uses shared context to store the list of user sites.
@@ -65,7 +64,6 @@ export function useSiteRunners(): {
   const addSite = useCallback(
     (siteInfo: ISiteInfo): GatsbySite | undefined => {
       if (sites?.has(siteInfo.path)) {
-        console.log(`Already got one`)
         return sites.get(siteInfo.path)
       }
       const site = new GatsbySite(siteInfo)
@@ -80,21 +78,18 @@ export function useSiteRunners(): {
 /**
  * Gets the status of an individual site
  */
-export function useSiteRunnerStatus(
-  theSite: GatsbySite
-): { logs: Array<string>; status: string | undefined } {
-  const [logs, setLogs] = useState<Array<string>>([])
-  const [status, setStatus] = useState<string>()
-
-  const update = useCallback((action: Action, site: GatsbySite): void => {
-    setLogs(site.logs)
-    setStatus(site.status)
+export function useSiteRunnerStatus(theSite: GatsbySite): ISiteStatus {
+  const [status, setStatus] = useState<ISiteStatus>(theSite.siteStatus)
+  console.log({ status })
+  const update = useCallback((status: ISiteStatus): void => {
+    setStatus(status)
   }, [])
 
   useEffect(() => {
     theSite?.onMessage(update)
+    setStatus(theSite.siteStatus)
     return (): void => theSite?.offMessage(update)
   }, [theSite])
 
-  return { logs, status }
+  return status
 }

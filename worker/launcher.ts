@@ -50,6 +50,19 @@ async function isGatsbySite(root: string): Promise<boolean> {
 
 let proc: ChildProcess | undefined
 
+function handleExit(code: number | null): void {
+  logAction({ type: `EXIT`, payload: code || 0 })
+}
+
+interface IAction {
+  type: string
+  payload: unknown
+}
+
+function logAction(action: IAction): void {
+  postMessage({ type: `message`, message: { type: `LOG_ACTION`, action } })
+}
+
 async function launchSite(program: IProgram): Promise<number> {
   if (!(await isGatsbySite(program.directory))) {
     postMessage({
@@ -62,6 +75,9 @@ async function launchSite(program: IProgram): Promise<number> {
   console.log(`Is a gatsby site. Launching`)
 
   if (proc) {
+    // We're restarting, so don't want to notify of exit
+    proc.off(`exit`, handleExit)
+
     proc.kill()
     proc = undefined
   }
@@ -69,6 +85,8 @@ async function launchSite(program: IProgram): Promise<number> {
   const port = await detectPort(8000)
 
   console.log(`Running on port ${port}`)
+
+  logAction({ type: `SET_PORT`, payload: port })
 
   // Runs `gatsby develop` in the site root
   proc = spawn(
@@ -89,13 +107,17 @@ async function launchSite(program: IProgram): Promise<number> {
   proc.stdout?.on(`data`, (data) => console.log(data))
 
   proc.on(`message`, (message) => postMessage({ type: `message`, message }))
+
+  proc.on(`exit`, handleExit)
+
   return port
 }
 
 // Messages from the parent renderer window
 onmessage = async (message: DevelopEvent): Promise<void> => {
+  console.log(`message`, message)
   const { data } = message
-  switch (data.type) {
+  switch (data?.type) {
     case `launch`:
       await launchSite(data.program)
       postMessage(`Hi`)

@@ -33,8 +33,6 @@ export function SiteBrowser({
     }
 
     onSelectSite(result)
-
-    console.log({ result })
   }, [onSelectSite])
 
   return <Button size="S" textVariant="BRAND" onClick={browse} {...props} />
