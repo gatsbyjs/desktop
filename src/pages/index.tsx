@@ -34,8 +34,7 @@ export default function App(): JSX.Element {
         <img src={require(`../../assets/logo.svg`)} alt="Gatsby" />
         {!!siteList.length && addSiteButton}
       </Flex>
-      {/* This weirdness is a temporary thing because an Emotion problem means theme isn't working in SSR */}
-      {siteList.length || typeof window === `undefined` ? (
+      {siteList.length ? (
         siteList.map((site) => <SitePreview key={site.root} site={site} />)
       ) : (
         <EmptyState
