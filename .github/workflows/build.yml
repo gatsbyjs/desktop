@@ -31,18 +31,21 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
       - name: Upload artifact - Mac
+        if: ${{ matrix.os == "macOS"}}
         uses: actions/upload-artifact@v2
         with:
           name: "Gatsby Desktop.dmg"
           path: dist/*.dmg
 
       - name: Upload artifact - Windows
+        if: ${{ matrix.os == "Windows"}}
         uses: actions/upload-artifact@v2
         with:
           name: "Gatsby Desktop Setup.exe"
           path: dist/*.exe
 
       - name: Upload artifact - Linux
+        if: ${{ matrix.os == "Linux"}}
         uses: actions/upload-artifact@v2
         with:
           name: "gatsby-desktop.snap"
