@@ -35,5 +35,5 @@ export function SiteBrowser({
     onSelectSite(result)
   }, [onSelectSite])
 
-  return <Button size="M" onClick={browse} {...props} />
+  return <Button size="S" textVariant="BRAND" onClick={browse} {...props} />
 }
