@@ -51,6 +51,8 @@ const DEFAULT_STATUS: ISiteStatus = {
   running: false,
 }
 
+const STOPPED_STATES = [GlobalStatus.NotStarted, GlobalStatus.Failed, `STOPPED`]
+
 /**
  * Represents a single user Gatsby site
  */
@@ -122,11 +124,7 @@ export class GatsbySite {
         port: service.port as number,
       }
 
-      if (
-        [GlobalStatus.NotStarted, GlobalStatus.Failed, `STOPPED`].includes(
-          this.siteStatus.status
-        )
-      ) {
+      if (STOPPED_STATES.includes(this.siteStatus.status)) {
         newStatus.status = WorkerStatus.runningInBackground
       }
       this.updateStatus(newStatus)
