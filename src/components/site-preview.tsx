@@ -37,11 +37,21 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         </Text>
         {/* TODO: We can do this better by properly keeping track of running status */}
         {!status || [`STOPPED`, `FAILED`, `INTERRUPTED`].includes(status) ? (
-          <Button size="M" variant="SECONDARY" onClick={start}>
+          <Button
+            size="S"
+            variant="SECONDARY"
+            textVariant="BRAND"
+            onClick={start}
+          >
             Start
           </Button>
         ) : (
-          <Button size="M" variant="SECONDARY" onClick={stop}>
+          <Button
+            size="S"
+            variant="SECONDARY"
+            textVariant="BRAND"
+            onClick={stop}
+          >
             Stop
           </Button>
         )}

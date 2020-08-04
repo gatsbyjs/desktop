@@ -7,7 +7,7 @@ export function Layout({
   children: React.ReactNode
 }): JSX.Element {
   return (
-    <Flex m={4} css={{ flexDirection: `column` }}>
+    <Flex m={6} css={{ flexDirection: `column` }}>
       {children}
     </Flex>
   )
