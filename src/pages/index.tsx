@@ -7,6 +7,7 @@ import { useMemo } from "react"
 import { EmptyState } from "gatsby-interface"
 import { useCallback } from "react"
 import { Layout } from "../components/layout"
+import { SettingsMenu } from "../components/settings-menu"
 
 export default function App(): JSX.Element {
   const { addSite, sites } = useSiteRunners()
@@ -33,6 +34,7 @@ export default function App(): JSX.Element {
       >
         <img src={require(`../../assets/logo.svg`)} alt="Gatsby" />
         {!!siteList.length && addSiteButton}
+        <SettingsMenu />
       </Flex>
       {siteList.length ? (
         siteList.map((site) => <SitePreview key={site.root} site={site} />)
