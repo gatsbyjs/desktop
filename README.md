@@ -2,11 +2,19 @@
 
 A proof-of-concept desktop app for managing your Gatsby sites.
 
+<p align="center">
+<img alt="Gatsby Desktop" src="assets/screenshot.png" />
+</p>
+
 ## Warning
 
-This is pre-pre-alpha software, is under active development, and is probably broken. Don't blame us if your computer catches fire.
+This is alpha software, is under active development, and is likely to be broken. Use at your own risk.
 
-To run:
+### To install built packages:
+
+1. Click on releases and choose the installer for your platform. Mac users will need to right-click (or ctrl-click) on the app when you first launch it, until we have code signing set up.
+
+### To install from source:
 
 1. Clone the repo
 2. Run `yarn`

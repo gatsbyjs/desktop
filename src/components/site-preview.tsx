@@ -59,7 +59,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         p: 4,
       }}
     >
-      <Flex css={{ justifyContent: `space-between` }}>
+      <Flex css={{ justifyContent: `space-between`, minHeight: `24px` }}>
         <SiteName
           siteName={site?.packageJson?.name ?? `Unnamed site`}
           status={status}

@@ -26,7 +26,7 @@ export function Layout({
           px: 6,
         }}
       >
-        <Flex sx={{ flex: `1 1 auto` }} paddingBottom={3}>
+        <Flex sx={{ flex: `1 1 auto` }}>
           <img src={require(`../../assets/logo.svg`)} alt="Gatsby" />
         </Flex>
         <Flex>

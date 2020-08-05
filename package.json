@@ -1,7 +1,7 @@
 {
   "name": "gatsby-desktop",
   "description": "Gatsby Desktop",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.1",
   "main": "lib/main.js",
   "homepage": "https://www.gatsbyjs.com/",
   "author": "<matt@gatsbyjs.com>",
@@ -71,6 +71,9 @@
     "appId": "com.gatsbyjs.desktop",
     "copyright": "Copyright © 2020 Gatsby Inc.",
     "icon": "assets/icon.png",
+    "publish": [
+      "github"
+    ],
     "files": [
       "public/**/*",
       "lib/**/*",
