@@ -37,4 +37,6 @@ Gatsby Desktop is written in TypeScript. We use [microbundle](https://github.com
 
 To debug the renderer, use [Chrome devtools](chrome://inspect/#devices) and listen to port 8315.
 
-As of today we're not building any installer packages, but will soon.
+### Release process
+
+Great a draft release in GitHub, with the tag as the new version number prefixed with `v`, e.g. `v0.0.1-alpha.2`. Update the version number in package.json to match, and commit. Push that to master and GitHub Actions should do a build and eventually attach the packaged files to the draft release. Once the build is complete, publish the draft release.
