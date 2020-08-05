@@ -1,6 +1,6 @@
 import { menubar } from "menubar"
 import path from "path"
-import { ipcMain, dialog } from "electron"
+import { ipcMain, dialog, app } from "electron"
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
@@ -36,6 +36,11 @@ async function start(): Promise<void> {
       },
     },
   })
+
+  ipcMain.on(`quit-app`, () => {
+    app.quit()
+  })
+
   // This request comes from the renderer
   ipcMain.handle(`browse-for-site`, async () => {
     console.log(`Browsing for site`)
