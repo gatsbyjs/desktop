@@ -1,14 +1,12 @@
 /** @jsx jsx */
-import { jsx, Flex, Box } from "theme-ui"
+import { jsx } from "theme-ui"
 import { useSiteRunners } from "../components/site-runners"
 import { SitePreview } from "../components/site-preview"
 import { SiteBrowser } from "../components/site-browser"
 import { useMemo } from "react"
-import { EmptyState, DropdownMenuItem, Text } from "gatsby-interface"
+import { EmptyState } from "gatsby-interface"
 import { useCallback } from "react"
 import { Layout } from "../components/layout"
-import { SettingsMenu } from "../components/settings-menu"
-import { ipcRenderer } from "electron"
 
 export default function App(): JSX.Element {
   const { addSite, sites } = useSiteRunners()

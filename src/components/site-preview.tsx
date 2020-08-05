@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui"
-import { Text, Button } from "gatsby-interface"
-import { PropsWithChildren, useCallback } from "react"
+import { Text, Button, SplitButton, DropdownMenuItem } from "gatsby-interface"
+import { PropsWithChildren, useCallback, Fragment } from "react"
 import { GatsbySite, WorkerStatus, Status } from "../controllers/site"
 import { useSiteRunnerStatus } from "./site-runners"
 import { SiteName } from "./site-name"
@@ -28,6 +28,26 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
   const stop = useCallback(() => site?.stop(), [site])
   const start = useCallback(() => site?.start(), [site])
 
+  function StartButton({ label }: { label: string }): JSX.Element {
+    return (
+      <SplitButton
+        size="S"
+        variant="SECONDARY"
+        textVariant="BRAND"
+        onClick={start}
+        buttonLabel={label}
+        dropdownButtonLabel="More options"
+        sx={{ fontFamily: `sans`, fontSize: 0 }}
+      >
+        <DropdownMenuItem onSelect={(): void => console.log(`Clear`)}>
+          <Text sx={{ fontFamily: `sans`, fontSize: 1 }} as="span">
+            Clear Cache and Start
+          </Text>
+        </DropdownMenuItem>
+      </SplitButton>
+    )
+  }
+
   return (
     <Flex
       as={`section`}
@@ -45,24 +65,21 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
           status={status}
         />
         {!running ? (
-          <Button
-            size="S"
-            variant="SECONDARY"
-            textVariant="BRAND"
-            onClick={start}
-          >
-            Start
-          </Button>
+          <StartButton label={`Start`} />
         ) : (
           canBeKilled(status, pid) && (
-            <Button
-              size="S"
-              variant="SECONDARY"
-              textVariant="BRAND"
-              onClick={stop}
-            >
-              Stop
-            </Button>
+            <Fragment>
+              <StartButton label={`Restart`} />
+              <Button
+                sx={{ fontFamily: `sans`, fontSize: 0 }}
+                size="S"
+                variant="SECONDARY"
+                textVariant="BRAND"
+                onClick={stop}
+              >
+                Stop
+              </Button>
+            </Fragment>
           )
         )}
       </Flex>

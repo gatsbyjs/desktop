@@ -24,10 +24,11 @@ function getColorForStatus(status: Status, theme: Record<string, any>): string {
       return theme.colors.grey[80]
 
     case GlobalStatus.Failed:
+    case GlobalStatus.Interrupted:
       return theme.tones.DANGER.dark
 
     default:
-      return theme.tones.text.primary
+      return theme.colors.text.primary
   }
 }
 
@@ -45,6 +46,7 @@ function StatusIcon({ status }: { status: Status }): JSX.Element {
       return <MdSchedule size={16} />
 
     case GlobalStatus.Failed:
+    case GlobalStatus.Interrupted:
       return <MdWarning size={16} />
 
     default:

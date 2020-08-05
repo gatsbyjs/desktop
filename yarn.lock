@@ -6063,10 +6063,10 @@ gatsby-graphiql-explorer@^0.4.12:
   dependencies:
     "@babel/runtime" "^7.10.3"
 
-gatsby-interface@^0.0.182:
-  version "0.0.182"
-  resolved "https://registry.yarnpkg.com/gatsby-interface/-/gatsby-interface-0.0.182.tgz#2f08334a9370e868cc9fbbdeb7bb9f3ebbb54f15"
-  integrity sha512-BKQKqMFHtq5nmHLL1aTprgwdc2FsqyFkcV5kmuHK6pIcI4/loxD+kgxV8OT7/Ar/f2F3QMfEZ1w2Fd2f17hpjg==
+gatsby-interface@^0.0.186-Elanhant-split-button-20200802T2129:
+  version "0.0.186-Elanhant-split-button-20200802T2129"
+  resolved "https://registry.yarnpkg.com/gatsby-interface/-/gatsby-interface-0.0.186-Elanhant-split-button-20200802T2129.tgz#7892f0ae5957d1c32291fc95cc834b6ad17d0f03"
+  integrity sha512-emXWGa0ErOeQCt/iKZxvFqI66Q2WsXKTr9wFvROUkBQD1P8q73talR1b7iN/n56c4TWCq4cQNAYpd9vxo1YTVA==
   dependencies:
     "@mdx-js/react" "^1.5.2"
     "@reach/alert" "0.10.3"
