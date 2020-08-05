@@ -6,6 +6,7 @@ import {
   DropdownMenuItems,
   DropdownMenuItemsProps,
 } from "gatsby-interface"
+import { MdMoreHoriz } from "react-icons/md"
 
 export function SettingsMenu(props: DropdownMenuItemsProps): JSX.Element {
   return (
@@ -24,7 +25,7 @@ export function SettingsMenu(props: DropdownMenuItemsProps): JSX.Element {
           justifySelf: `flex-end`,
         }}
       >
-        <img src={require(`../../assets/dots.svg`)} alt="Menu" />
+        <MdMoreHoriz size={24} sx={{ color: `grey.50` }} />
       </DropdownMenuButton>
       <DropdownMenuItems sx={{ width: `50vw` }} {...props} />
     </DropdownMenu>

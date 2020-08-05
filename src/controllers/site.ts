@@ -42,6 +42,7 @@ export interface ISiteStatus {
   activities: Map<string, any>
   running: boolean
   port?: number
+  pid?: number
 }
 
 const DEFAULT_STATUS: ISiteStatus = {
@@ -122,6 +123,7 @@ export class GatsbySite {
       const newStatus: Partial<ISiteStatus> = {
         running: true,
         port: service.port as number,
+        pid: service.pid as number,
       }
 
       if (STOPPED_STATES.includes(this.siteStatus.status)) {
@@ -158,6 +160,11 @@ export class GatsbySite {
 
   public stop(): void {
     if (!this.runner) {
+      if (this.siteStatus?.pid) {
+        process.kill(this.siteStatus?.pid)
+        this.updateStatus({ status: WorkerStatus.stopped })
+        return
+      }
       console.log(`No runner`)
       return
     }
