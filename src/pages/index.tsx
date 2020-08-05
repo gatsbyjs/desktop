@@ -1,13 +1,14 @@
 /** @jsx jsx */
-import { jsx, Flex } from "theme-ui"
+import { jsx, Flex, Box } from "theme-ui"
 import { useSiteRunners } from "../components/site-runners"
 import { SitePreview } from "../components/site-preview"
 import { SiteBrowser } from "../components/site-browser"
 import { useMemo } from "react"
-import { EmptyState } from "gatsby-interface"
+import { EmptyState, DropdownMenuItem, Text } from "gatsby-interface"
 import { useCallback } from "react"
 import { Layout } from "../components/layout"
 import { SettingsMenu } from "../components/settings-menu"
+import { ipcRenderer } from "electron"
 
 export default function App(): JSX.Element {
   const { addSite, sites } = useSiteRunners()
@@ -24,18 +25,7 @@ export default function App(): JSX.Element {
   )
 
   return (
-    <Layout>
-      <Flex
-        sx={{
-          justifyContent: `space-between`,
-          alignItems: `center`,
-          paddingBottom: 4,
-        }}
-      >
-        <img src={require(`../../assets/logo.svg`)} alt="Gatsby" />
-        {!!siteList.length && addSiteButton}
-        <SettingsMenu />
-      </Flex>
+    <Layout headerItems={siteList.length ? addSiteButton : null}>
       {siteList.length ? (
         siteList.map((site) => <SitePreview key={site.root} site={site} />)
       ) : (

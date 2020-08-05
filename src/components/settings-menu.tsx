@@ -7,22 +7,26 @@ import {
   DropdownMenuItemsProps,
 } from "gatsby-interface"
 
-import { BsThreeDots } from "react-icons/bs"
 export function SettingsMenu(props: DropdownMenuItemsProps): JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuButton
-        aria-label="Menu"
         sx={{
           background: `none`,
-          //   border: `none`,
-          px: 4,
-          py: 2,
+          border: `none`,
+          // Give ourselves a big hit target, but align as if we didn't
+          p: 4,
+          marginRight: -4,
+          my: -4,
+          cursor: `pointer`,
+          display: `flex`,
+          alignItems: `center`,
+          justifySelf: `flex-end`,
         }}
       >
-        <BsThreeDots size="18px" />
+        <img src={require(`../../assets/dots.svg`)} alt="Menu" />
       </DropdownMenuButton>
-      <DropdownMenuItems {...props} />
+      <DropdownMenuItems sx={{ width: `50vw` }} {...props} />
     </DropdownMenu>
   )
 }

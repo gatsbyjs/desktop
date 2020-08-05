@@ -26,7 +26,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         border: `grey`,
         borderRadius: 2,
         flexDirection: `column`,
-        my: 4,
+        marginBottom: 4,
         p: 4,
       }}
     >
