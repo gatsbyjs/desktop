@@ -10,6 +10,7 @@ import {
   createServiceLock,
   getService,
 } from "gatsby-core-utils/dist/service-lock"
+import { ipcRenderer } from "electron"
 
 const workerUrl = `/launcher.js`
 
@@ -29,7 +30,7 @@ export type Status = GlobalStatus | WorkerStatus
 export enum WorkerActionType {
   setPort = `SET_PORT`,
   exit = `EXIT`,
-
+  setPid = `SET_PID`,
   rawLog = `RAW_LOG`,
 }
 
@@ -216,19 +217,30 @@ export class GatsbySite {
         break
 
       case WorkerActionType.exit:
+        if (this.siteStatus.pid) {
+          ipcRenderer.send(`remove-child-pid`, this.siteStatus.pid)
+        }
         this.updateStatus({
           running: false,
+          pid: undefined,
           status:
             // payload is exitCode
             action.payload !== 0
               ? GlobalStatus.Failed
               : GlobalStatus.NotStarted,
         })
+
         break
 
       case WorkerActionType.setPort:
         // payload is port
         this.updateStatus({ port: action.payload as number })
+        break
+
+      case WorkerActionType.setPid:
+        // payload is pid
+        this.updateStatus({ pid: action.payload as number })
+        ipcRenderer.send(`add-child-pid`, action.payload)
         break
 
       case WorkerActionType.rawLog:
