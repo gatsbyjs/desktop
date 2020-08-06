@@ -3,6 +3,9 @@ import { jsx, ThemeProvider, merge, Theme } from "theme-ui"
 import { getTheme } from "gatsby-interface"
 import { RunnerProvider } from "./site-runners"
 import { ReactNode } from "react"
+import "typeface-inter"
+import "typeface-roboto-mono"
+
 const baseTheme = getTheme()
 
 // The cast is because there is a breaking change to the typings,
@@ -13,6 +16,9 @@ const theme = merge((baseTheme as unknown) as Theme, {
   },
   fontWeights: {
     "500": 500,
+  },
+  fonts: {
+    mono: `Roboto Mono`,
   },
   borders: {
     none: `none`,

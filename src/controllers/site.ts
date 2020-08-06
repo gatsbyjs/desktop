@@ -4,6 +4,7 @@ import {
   StructuredEventType,
   IPCMessageType,
   GlobalStatus,
+  LogObject,
 } from "../util/ipc-types"
 import { PackageJson } from "gatsby"
 import {
@@ -40,7 +41,7 @@ export interface IWorkerAction {
 }
 
 export interface ISiteStatus {
-  logs: Array<string>
+  logs: Array<LogObject>
   rawLogs: Array<string>
   status: Status
   activities: Map<string, any>
@@ -88,6 +89,7 @@ export class GatsbySite {
     this.updateStatus({
       running: true,
       logs: [],
+      rawLogs: [`Waiting for logs...`],
       activities: new Map<string, any>(),
       status: GlobalStatus.InProgress,
     })
@@ -101,12 +103,13 @@ export class GatsbySite {
     }
     this.runner.postMessage({ type: `launch`, program })
     this.runner.onmessage = (e): void => {
-      console.log(`Message received from worker`, e.data)
       if (
         e.data?.type === `message` &&
         e.data?.message?.type === IPCMessageType.LogAction
       ) {
         this.handleMessage(e.data?.message?.action)
+      } else {
+        console.log(`Message received from worker`, e.data)
       }
     }
   }
@@ -172,7 +175,7 @@ export class GatsbySite {
         this.updateStatus({ status: WorkerStatus.stopped })
         return
       }
-      console.log(`No runner`)
+      console.log(`No runner or pid`)
       return
     }
     this.runner.postMessage({ type: `stop` })
@@ -182,7 +185,7 @@ export class GatsbySite {
 
   logMessage(message: string): void {
     this.updateStatus({
-      logs: this.siteStatus.logs.concat(message),
+      rawLogs: this.siteStatus.rawLogs.concat(message),
     })
   }
 
@@ -191,7 +194,6 @@ export class GatsbySite {
    */
 
   handleMessage(action: Action | IWorkerAction): void {
-    console.log(`LOG`, action)
     const { activities } = this.siteStatus
 
     switch (action.type) {
@@ -214,8 +216,10 @@ export class GatsbySite {
         break
 
       case StructuredEventType.Log:
-        this.logMessage(action.payload.text)
-        console.log(action.payload.text)
+        this.updateStatus({
+          logs: this.siteStatus.logs.concat(action.payload),
+        })
+
         break
 
       case WorkerActionType.exit:
@@ -246,9 +250,7 @@ export class GatsbySite {
         break
 
       case WorkerActionType.rawLog:
-        this.updateStatus({
-          rawLogs: this.siteStatus.rawLogs.concat(String(action.payload)),
-        })
+        this.logMessage(String(action.payload))
         break
 
       default:

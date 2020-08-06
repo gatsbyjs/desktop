@@ -24,6 +24,7 @@ export function Layout({
           backgroundColor: `primaryBackground`,
           width: `100%`,
           px: 6,
+          maxWidth: `100vw`,
         }}
       >
         <Flex sx={{ flex: `1 1 auto` }}>

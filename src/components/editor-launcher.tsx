@@ -1,13 +1,19 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
 import { Button } from "gatsby-interface"
-import { MdCode } from "react-icons/md"
-import { useCallback, useMemo } from "react"
+import { DiVisualstudio } from "react-icons/di"
+import { useCallback, useMemo, ReactNode } from "react"
 import openInEditor from "open-in-editor"
+
+type EditorType = "code"
 
 export interface IProps {
   path: string
-  editor: string
+  editor: EditorType
+}
+
+const editorIcons: Record<EditorType, ReactNode> = {
+  code: <DiVisualstudio />,
 }
 
 export function EditorLauncher({ path, editor = `code` }: IProps): JSX.Element {
@@ -23,7 +29,7 @@ export function EditorLauncher({ path, editor = `code` }: IProps): JSX.Element {
       onClick={openEditor}
       variant="GHOST"
       size="M"
-      rightIcon={<MdCode />}
+      rightIcon={editorIcons[editor]}
       sx={{
         fontFamily: `sans`,
         color: `gatsby`,

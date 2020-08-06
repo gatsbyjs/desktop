@@ -9,6 +9,7 @@ import { FolderName } from "./folder-name"
 import { GlobalStatus } from "../util/ipc-types"
 import { SiteLauncher } from "./site-launcher"
 import { EditorLauncher } from "./editor-launcher"
+import { LogsLauncher } from "./logs-launcher"
 
 interface IProps {
   site: GatsbySite
@@ -18,12 +19,21 @@ function canBeKilled(status: Status, pid?: number): boolean {
   return status !== WorkerStatus.runningInBackground || !!pid
 }
 
+function isRunning(status: Status): boolean {
+  return (
+    status === GlobalStatus.Success ||
+    status === WorkerStatus.runningInBackground
+  )
+}
+
 /**
  * The item in the list of sites
  */
 
 export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { logs, status, running, port, pid } = useSiteRunnerStatus(site)
+  const { logs, status, running, port, pid, rawLogs } = useSiteRunnerStatus(
+    site
+  )
 
   const stop = useCallback(() => site?.stop(), [site])
   const start = useCallback(() => site?.start(), [site])
@@ -86,21 +96,9 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
       <FolderName sitePath={site.root} />
       <Flex>
         <EditorLauncher path={site.root} editor="code" />
-        {(status === GlobalStatus.Success ||
-          status === WorkerStatus.runningInBackground) &&
-          !!port && <SiteLauncher port={port} />}
+        {isRunning(status) && !!port && <SiteLauncher port={port} />}
+        {!!rawLogs?.length && <LogsLauncher logs={rawLogs} status={status} />}
       </Flex>
-      {!!logs?.length && (
-        <details>
-          <ul>
-            {logs?.map((item, idx) => (
-              <li key={idx}>
-                <Text as="span">{item}</Text>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
     </Flex>
   )
 }
