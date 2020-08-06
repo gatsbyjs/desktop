@@ -29,6 +29,8 @@ export type Status = GlobalStatus | WorkerStatus
 export enum WorkerActionType {
   setPort = `SET_PORT`,
   exit = `EXIT`,
+
+  rawLog = `RAW_LOG`,
 }
 
 export interface IWorkerAction {
@@ -91,7 +93,9 @@ export class GatsbySite {
       directory: this.root,
     }
     this.runner = new Worker(workerUrl)
-
+    this.runner.onerror = (e): void => {
+      this.logMessage(`Error: ${e.message}`)
+    }
     this.runner.postMessage({ type: `launch`, program })
     this.runner.onmessage = (e): void => {
       console.log(`Message received from worker`, e.data)
@@ -173,6 +177,12 @@ export class GatsbySite {
     this.updateStatus({ status: WorkerStatus.stopped })
   }
 
+  logMessage(message: string): void {
+    this.updateStatus({
+      logs: this.siteStatus.logs.concat(message),
+    })
+  }
+
   /**
    * Handles structured logs from the site
    */
@@ -201,9 +211,7 @@ export class GatsbySite {
         break
 
       case StructuredEventType.Log:
-        this.updateStatus({
-          logs: this.siteStatus.logs.concat(action.payload.text),
-        })
+        this.logMessage(action.payload.text)
         console.log(action.payload.text)
         break
 
@@ -221,6 +229,10 @@ export class GatsbySite {
       case WorkerActionType.setPort:
         // payload is port
         this.updateStatus({ port: action.payload as number })
+        break
+
+      case WorkerActionType.rawLog:
+        this.logMessage(String(action.payload))
         break
 
       default:
