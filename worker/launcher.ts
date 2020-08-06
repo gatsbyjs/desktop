@@ -103,6 +103,8 @@ async function launchSite(program: IProgram): Promise<number> {
     // structured logs
     stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
     cwd: program.directory,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    env: { ...process.env, FORCE_COLOR: `1` },
   })
 
   logAction({ type: `SET_PID`, payload: proc.pid })
