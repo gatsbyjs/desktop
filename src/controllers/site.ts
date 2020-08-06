@@ -41,6 +41,7 @@ export interface IWorkerAction {
 
 export interface ISiteStatus {
   logs: Array<string>
+  rawLogs: Array<string>
   status: Status
   activities: Map<string, any>
   running: boolean
@@ -50,6 +51,7 @@ export interface ISiteStatus {
 
 const DEFAULT_STATUS: ISiteStatus = {
   logs: [],
+  rawLogs: [],
   status: GlobalStatus.NotStarted,
   activities: new Map<string, any>(),
   running: false,
@@ -244,7 +246,9 @@ export class GatsbySite {
         break
 
       case WorkerActionType.rawLog:
-        this.logMessage(String(action.payload))
+        this.updateStatus({
+          rawLogs: this.siteStatus.rawLogs.concat(String(action.payload)),
+        })
         break
 
       default:
