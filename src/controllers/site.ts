@@ -15,6 +15,19 @@ import { ipcRenderer } from "electron"
 
 const workerUrl = `/launcher.js`
 
+// TODO: move these to gatsby-core-utils
+
+export interface ISiteMetadata {
+  sitePath: string
+  name?: string
+  lastRun?: number
+}
+
+export interface IServiceInfo {
+  port?: number
+  pid?: number
+}
+
 export interface ISiteInfo {
   path: string
   packageJson: PackageJson
@@ -68,6 +81,7 @@ export class GatsbySite {
   root: string
   packageJson: PackageJson
   siteStatus: ISiteStatus = DEFAULT_STATUS
+  startedInApp?: boolean
 
   private _listeners = new Set<(status: ISiteStatus, action?: Action) => void>()
 
@@ -86,6 +100,7 @@ export class GatsbySite {
    */
 
   public start(): void {
+    this.startedInApp = true
     this.updateStatus({
       running: true,
       logs: [],
@@ -127,7 +142,7 @@ export class GatsbySite {
   }
 
   public async loadFromServiceConfig(): Promise<void> {
-    const service = await getService(this.root, `developproxy`)
+    const service = await getService<IServiceInfo>(this.root, `developproxy`)
     console.log({ service })
     if (service) {
       const newStatus: Partial<ISiteStatus> = {
@@ -148,7 +163,7 @@ export class GatsbySite {
   }
 
   public async saveMetadataToServiceConfig(): Promise<void> {
-    const metadata = getService(this.root, `metadata`, true)
+    const metadata = getService<ISiteMetadata>(this.root, `metadata`, true)
     return createServiceLock(this.root, `metadata`, {
       name: this.packageJson.name,
       sitePath: this.root,

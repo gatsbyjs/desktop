@@ -9,6 +9,7 @@ import {
   loadPackageJson,
   hasGatsbyDependency,
 } from "./utils"
+import { watchSites } from "./site-watcher"
 
 const dir = path.resolve(__dirname, `..`)
 
@@ -45,6 +46,12 @@ async function start(): Promise<void> {
 
   ipcMain.on(`remove-child-pid`, (event, payload: number) => {
     childPids.delete(payload)
+  })
+
+  ipcMain.on(`watch-sites`, (event) => {
+    watchSites((sites) => {
+      event.sender.send(`sites-updated`, sites)
+    })
   })
 
   app.on(`before-quit`, () => {

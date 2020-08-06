@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from "react"
 import { GatsbySite, ISiteInfo, ISiteStatus } from "../controllers/site"
+import { ipcRenderer } from "electron"
 
 /**
  * This module uses shared context to store the list of user sites.
@@ -44,6 +45,8 @@ export function RunnerProvider({
     },
     [sites]
   )
+
+  ipcRenderer
 
   return (
     <RunnerContext.Provider value={{ sites, addSite, removeSite }}>
