@@ -4,6 +4,9 @@ import { fork, ChildProcess } from "child_process"
 import type { PackageJson } from "gatsby"
 import path from "path"
 import detectPort from "detect-port"
+import fixPath from "fix-path"
+
+fixPath()
 
 /**
  * This is a Worker, spawned by the main renderer process. There is one of these
@@ -92,18 +95,17 @@ async function launchSite(program: IProgram): Promise<number> {
 
   logAction({ type: `SET_PORT`, payload: port })
 
+  const cmd = path.join(program.directory, `node_modules`, `.bin`, `gatsby`)
+
   // Runs `gatsby develop` in the site root
-  proc = fork(
-    path.join(program.directory, `node_modules`, `.bin`, `gatsby`),
-    [`develop`, `--port=${port}`],
-    {
-      ...process.env,
-      // The Gatsby process detects the IPC channel and uses it to send
-      // structured logs
-      stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
-      cwd: program.directory,
-    }
-  )
+  proc = fork(cmd, [`develop`, `--port=${port}`], {
+    // The Gatsby process detects the IPC channel and uses it to send
+    // structured logs
+    stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
+    cwd: program.directory,
+  })
+
+  logAction({ type: `SET_PID`, payload: proc.pid })
 
   proc.stderr?.setEncoding(`utf8`)
   proc.stdout?.setEncoding(`utf8`)
