@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import { Text } from "gatsby-interface"
+import { Text, InProgressIcon } from "gatsby-interface"
 import { Status, WorkerStatus } from "../controllers/site"
 import { GlobalStatus } from "../util/ipc-types"
 import { MdPlayArrow, MdStop, MdSchedule, MdWarning } from "react-icons/md"
@@ -43,7 +43,7 @@ function StatusIcon({ status }: { status: Status }): JSX.Element {
       return <MdStop size={16} />
 
     case GlobalStatus.InProgress:
-      return <MdSchedule size={16} />
+      return <InProgressIcon size="xxsmall" />
 
     case GlobalStatus.Failed:
     case GlobalStatus.Interrupted:

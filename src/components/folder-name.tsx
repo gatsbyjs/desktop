@@ -15,6 +15,7 @@ export function FolderName({ sitePath }: IProps): JSX.Element {
       as="span"
       sx={{
         py: 2,
+        px: 1,
         fontFamily: `sans`,
         fontSize: 0,
         lineHeight: `12px`,
