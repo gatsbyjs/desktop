@@ -37,6 +37,20 @@ async function start(): Promise<void> {
     },
   })
 
+  const childPids = new Set<number>()
+
+  ipcMain.on(`add-child-pid`, (event, payload: number) => {
+    childPids.add(payload)
+  })
+
+  ipcMain.on(`remove-child-pid`, (event, payload: number) => {
+    childPids.delete(payload)
+  })
+
+  app.on(`before-quit`, () => {
+    childPids.forEach((pid) => process.kill(pid))
+  })
+
   ipcMain.on(`quit-app`, () => {
     app.quit()
   })

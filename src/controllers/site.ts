@@ -10,6 +10,7 @@ import {
   createServiceLock,
   getService,
 } from "gatsby-core-utils/dist/service-lock"
+import { ipcRenderer } from "electron"
 
 const workerUrl = `/launcher.js`
 
@@ -29,6 +30,8 @@ export type Status = GlobalStatus | WorkerStatus
 export enum WorkerActionType {
   setPort = `SET_PORT`,
   exit = `EXIT`,
+  setPid = `SET_PID`,
+  rawLog = `RAW_LOG`,
 }
 
 export interface IWorkerAction {
@@ -38,6 +41,7 @@ export interface IWorkerAction {
 
 export interface ISiteStatus {
   logs: Array<string>
+  rawLogs: Array<string>
   status: Status
   activities: Map<string, any>
   running: boolean
@@ -47,6 +51,7 @@ export interface ISiteStatus {
 
 const DEFAULT_STATUS: ISiteStatus = {
   logs: [],
+  rawLogs: [],
   status: GlobalStatus.NotStarted,
   activities: new Map<string, any>(),
   running: false,
@@ -91,7 +96,9 @@ export class GatsbySite {
       directory: this.root,
     }
     this.runner = new Worker(workerUrl)
-
+    this.runner.onerror = (e): void => {
+      this.logMessage(`Error: ${e.message}`)
+    }
     this.runner.postMessage({ type: `launch`, program })
     this.runner.onmessage = (e): void => {
       console.log(`Message received from worker`, e.data)
@@ -173,6 +180,12 @@ export class GatsbySite {
     this.updateStatus({ status: WorkerStatus.stopped })
   }
 
+  logMessage(message: string): void {
+    this.updateStatus({
+      logs: this.siteStatus.logs.concat(message),
+    })
+  }
+
   /**
    * Handles structured logs from the site
    */
@@ -201,26 +214,41 @@ export class GatsbySite {
         break
 
       case StructuredEventType.Log:
-        this.updateStatus({
-          logs: this.siteStatus.logs.concat(action.payload.text),
-        })
+        this.logMessage(action.payload.text)
         console.log(action.payload.text)
         break
 
       case WorkerActionType.exit:
+        if (this.siteStatus.pid) {
+          ipcRenderer.send(`remove-child-pid`, this.siteStatus.pid)
+        }
         this.updateStatus({
           running: false,
+          pid: undefined,
           status:
             // payload is exitCode
             action.payload !== 0
               ? GlobalStatus.Failed
               : GlobalStatus.NotStarted,
         })
+
         break
 
       case WorkerActionType.setPort:
         // payload is port
         this.updateStatus({ port: action.payload as number })
+        break
+
+      case WorkerActionType.setPid:
+        // payload is pid
+        this.updateStatus({ pid: action.payload as number })
+        ipcRenderer.send(`add-child-pid`, action.payload)
+        break
+
+      case WorkerActionType.rawLog:
+        this.updateStatus({
+          rawLogs: this.siteStatus.rawLogs.concat(String(action.payload)),
+        })
         break
 
       default:
