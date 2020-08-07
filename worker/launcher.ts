@@ -39,11 +39,18 @@ async function readJSON<T = unknown>(filePath: string): Promise<T> {
   })
 }
 
+// Gatsby package type is missing these
+type PackageJsonWithBin = PackageJson & { bin: { gatsby: string } }
+
+async function getPackageJson(root: string): Promise<PackageJsonWithBin> {
+  return readJSON<PackageJsonWithBin>(
+    `${root}/node_modules/gatsby/package.json`
+  )
+}
+
 async function isGatsbySite(root: string): Promise<boolean> {
   try {
-    const packageJson = await readJSON<PackageJson>(
-      `/${root}/node_modules/gatsby/package.json`
-    )
+    const packageJson = await getPackageJson(root)
     return packageJson?.name === `gatsby`
   } catch (e) {
     console.warn({ e })
@@ -95,7 +102,11 @@ async function launchSite(program: IProgram): Promise<number> {
 
   logAction({ type: `SET_PORT`, payload: port })
 
-  const cmd = path.join(program.directory, `node_modules`, `.bin`, `gatsby`)
+  const packageJson = await getPackageJson(program.directory)
+
+  const bin = packageJson?.bin?.gatsby || `dist/bin/gatsby.js`
+
+  const cmd = path.resolve(program.directory, `node_modules`, `gatsby`, bin)
 
   // Runs `gatsby develop` in the site root
   proc = fork(cmd, [`develop`, `--port=${port}`], {
