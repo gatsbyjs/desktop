@@ -12,7 +12,7 @@ This is alpha software, is under active development, and is likely to be broken.
 
 ### To install built packages:
 
-1. Click on releases and choose the installer for your platform. Mac users will need to right-click (or ctrl-click) on the app when you first launch it, until we have code signing set up.
+1. Click on [releases](https://github.com/gatsbyjs/desktop/releases) and choose the installer for your platform. Mac users will need to right-click (or ctrl-click) on the app when you first launch it, until we have code signing set up. Windows users will need to agree to lots of Defender warnings.
 
 ### To install from source:
 
@@ -24,7 +24,7 @@ This is alpha software, is under active development, and is likely to be broken.
 
 Gatsby Desktop is an Electron app, which is currently just displayed in the menubar or tray. All Electron apps have two primary processes:
 
-1. "main", which is a Node.js script which handles windowing, menus and similar native bits. Think of it as the server. It opens BrowserWindows which contain:
+1. "main", which is a Node.js script which handles windowing, menus and similar native bits. Think of it as the server. It opens `BrowserWindow`s which contain:
 2. "renderer": this is the UI of the app, which is HTML + JS. In Gatsby Desktop, this is of course a local Gatsby site. Unlike a regular web app, Electron renderers can import and use built-in Node.js modules, such as `fs` and `child_process`.
 
 Gatsby Desktop can launch and run your local Gatsby sites. To do this we use another process:
