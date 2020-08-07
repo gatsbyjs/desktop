@@ -63,10 +63,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
       }}
     >
       <Flex css={{ justifyContent: `space-between`, minHeight: `24px` }}>
-        <SiteName
-          siteName={site?.packageJson?.name ?? `Unnamed site`}
-          status={status}
-        />
+        <SiteName siteName={site?.name ?? `Unnamed site`} status={status} />
         {!running ? (
           <StartButton label={`Start`} />
         ) : (
@@ -94,17 +91,6 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
           !!port && <SiteLauncher port={port} />}
         {!!rawLogs?.length && <LogsLauncher logs={rawLogs} status={status} />}
       </Flex>
-      {/* {!!logs?.length && (
-        <details>
-          <ul>
-            {logs?.map((item, idx) => (
-              <li key={idx}>
-                <Text as="span">{item}</Text>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )} */}
     </Flex>
   )
 }
