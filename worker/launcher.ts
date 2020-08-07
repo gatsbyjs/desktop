@@ -42,7 +42,7 @@ async function readJSON<T = unknown>(filePath: string): Promise<T> {
 async function isGatsbySite(root: string): Promise<boolean> {
   try {
     const packageJson = await readJSON<PackageJson>(
-      `/${root}/node_modules/gatsby/package.json`
+      `${root}/node_modules/gatsby/package.json`
     )
     return packageJson?.name === `gatsby`
   } catch (e) {
@@ -95,7 +95,7 @@ async function launchSite(program: IProgram): Promise<number> {
 
   logAction({ type: `SET_PORT`, payload: port })
 
-  const cmd = path.join(program.directory, `node_modules`, `.bin`, `gatsby`)
+  const cmd = path.join(program.directory, `node_modules`, `gatsby`, `cli.js`)
 
   // Runs `gatsby develop` in the site root
   proc = fork(cmd, [`develop`, `--port=${port}`], {
