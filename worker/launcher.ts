@@ -95,7 +95,14 @@ async function launchSite(program: IProgram): Promise<number> {
 
   logAction({ type: `SET_PORT`, payload: port })
 
-  const cmd = path.join(program.directory, `node_modules`, `gatsby`, `cli.js`)
+  const cmd = path.join(
+    program.directory,
+    `node_modules`,
+    `gatsby`,
+    `dist`,
+    `bin`,
+    `gatsby.js`
+  )
 
   // Runs `gatsby develop` in the site root
   proc = fork(cmd, [`develop`, `--port=${port}`], {
