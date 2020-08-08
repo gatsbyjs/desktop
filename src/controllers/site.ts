@@ -15,6 +15,19 @@ import { ipcRenderer } from "electron"
 
 const workerUrl = `/launcher.js`
 
+// TODO: move these to gatsby-core-utils
+
+export interface ISiteMetadata {
+  sitePath: string
+  name?: string
+  lastRun?: number
+  pid?: number
+}
+
+export interface IServiceInfo {
+  port?: number
+}
+
 export interface ISiteInfo {
   path: string
   packageJson: PackageJson
@@ -65,18 +78,20 @@ const STOPPED_STATES = [GlobalStatus.NotStarted, GlobalStatus.Failed, `STOPPED`]
  */
 export class GatsbySite {
   runner?: Worker
-  root: string
-  packageJson: PackageJson
   siteStatus: ISiteStatus = DEFAULT_STATUS
+  startedInApp?: boolean
 
   private _listeners = new Set<(status: ISiteStatus, action?: Action) => void>()
 
-  constructor(siteInfo: ISiteInfo) {
-    this.root = siteInfo.path
-    this.packageJson = siteInfo.packageJson
-    if (this.root) {
-      this.loadFromServiceConfig()
+  constructor(
+    public root: string,
+    public name: string = `Unnamed site`,
+    saveMetadata = false
+  ) {
+    if (saveMetadata) {
       this.saveMetadataToServiceConfig()
+    } else {
+      this.loadFromServiceConfig()
     }
   }
 
@@ -86,6 +101,11 @@ export class GatsbySite {
    */
 
   public start(): void {
+    if (this.siteStatus.running) {
+      this.stop()
+    }
+    this.startedInApp = true
+    this.updateLastRun()
     this.updateStatus({
       running: true,
       logs: [],
@@ -127,13 +147,13 @@ export class GatsbySite {
   }
 
   public async loadFromServiceConfig(): Promise<void> {
-    const service = await getService(this.root, `developproxy`)
+    const service = await getService<IServiceInfo>(this.root, `developproxy`)
     console.log({ service })
     if (service) {
+      // Site is running
       const newStatus: Partial<ISiteStatus> = {
         running: true,
         port: service.port as number,
-        pid: service.pid as number,
       }
 
       if (STOPPED_STATES.includes(this.siteStatus.status)) {
@@ -141,18 +161,39 @@ export class GatsbySite {
       }
       this.updateStatus(newStatus)
     } else {
-      if (this.siteStatus.status === GlobalStatus.NotStarted) {
+      if (this.siteStatus.status === WorkerStatus.runningInBackground) {
+        this.updateStatus({ status: GlobalStatus.NotStarted, running: false })
+      } else if (this.siteStatus.status === GlobalStatus.NotStarted) {
         this.updateStatus({ running: false })
       }
     }
   }
 
   public async saveMetadataToServiceConfig(): Promise<void> {
-    const metadata = getService(this.root, `metadata`, true)
+    const metadata = await getService<ISiteMetadata>(
+      this.root,
+      `metadata`,
+      true
+    )
     return createServiceLock(this.root, `metadata`, {
-      name: this.packageJson.name,
+      name: this.name,
+      sitePath: this.root,
+      pid: this.siteStatus.pid,
+      ...metadata,
+      lastRun: Date.now(),
+    }).then((unlock) => unlock?.())
+  }
+
+  public async updateLastRun(): Promise<void> {
+    const metadata = await getService<ISiteMetadata>(
+      this.root,
+      `metadata`,
+      true
+    )
+    return createServiceLock(this.root, `metadata`, {
       sitePath: this.root,
       ...metadata,
+      lastRun: Date.now(),
     }).then((unlock) => unlock?.())
   }
 
@@ -170,9 +211,10 @@ export class GatsbySite {
 
   public stop(): void {
     if (!this.runner) {
+      // Started outside Desktop
       if (this.siteStatus?.pid) {
         process.kill(this.siteStatus?.pid)
-        this.updateStatus({ status: WorkerStatus.stopped })
+        this.updateStatus({ status: WorkerStatus.stopped, running: false })
         return
       }
       console.log(`No runner or pid`)
@@ -180,7 +222,7 @@ export class GatsbySite {
     }
     this.runner.postMessage({ type: `stop` })
     this.runner = undefined
-    this.updateStatus({ status: WorkerStatus.stopped })
+    this.updateStatus({ status: WorkerStatus.stopped, running: false })
   }
 
   logMessage(message: string): void {

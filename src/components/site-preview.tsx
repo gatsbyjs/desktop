@@ -70,10 +70,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
       }}
     >
       <Flex css={{ justifyContent: `space-between`, minHeight: `24px` }}>
-        <SiteName
-          siteName={site?.packageJson?.name ?? `Unnamed site`}
-          status={status}
-        />
+        <SiteName siteName={site?.name ?? `Unnamed site`} status={status} />
         {!running ? (
           <StartButton label={`Start`} />
         ) : (

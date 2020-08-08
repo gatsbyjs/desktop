@@ -9,6 +9,7 @@ import {
   loadPackageJson,
   hasGatsbyDependency,
 } from "./utils"
+import { watchSites, stopWatching } from "./site-watcher"
 
 const dir = path.resolve(__dirname, `..`)
 
@@ -26,6 +27,8 @@ async function start(): Promise<void> {
   const mb = menubar({
     dir,
     icon: path.resolve(dir, `assets`, `IconTemplate.png`),
+    // In prod we can preload the window. In develop we need to wait for Gatsby to load
+    preloadWindow: !process.env.GATSBY_DEVELOP_URL,
     // If we're running develop we pass in a URL, otherwise use the one
     // of the express server we just started
     index: process.env.GATSBY_DEVELOP_URL || `http://localhost:${port}`,
@@ -47,8 +50,20 @@ async function start(): Promise<void> {
     childPids.delete(payload)
   })
 
+  ipcMain.on(`watch-sites`, (event) => {
+    watchSites((sites) => {
+      console.log(`Got sites`, sites)
+      event.sender.send(`sites-updated`, sites)
+    })
+  })
+
+  ipcMain.on(`unwatch-sites`, () => {
+    stopWatching()
+  })
+
   app.on(`before-quit`, () => {
     childPids.forEach((pid) => process.kill(pid))
+    stopWatching()
   })
 
   ipcMain.on(`quit-app`, () => {

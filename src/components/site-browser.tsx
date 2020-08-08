@@ -4,7 +4,7 @@ import { ISiteInfo } from "../controllers/site"
 import { Button, ButtonProps } from "gatsby-interface"
 
 interface IProps extends ButtonProps {
-  onSelectSite: (siteInfo: ISiteInfo) => void
+  onSelectSite?: (siteInfo: ISiteInfo) => void
   onSiteError: (message?: string) => void
 }
 
@@ -32,7 +32,7 @@ export function SiteBrowser({
       return
     }
 
-    onSelectSite(result)
+    onSelectSite?.(result)
   }, [onSelectSite])
 
   return <Button size="S" textVariant="BRAND" onClick={browse} {...props} />
