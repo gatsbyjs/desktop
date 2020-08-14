@@ -1,6 +1,6 @@
 import { menubar } from "menubar"
 import path from "path"
-import { ipcMain, dialog, app } from "electron"
+import { ipcMain, dialog, app, BrowserWindow } from "electron"
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
@@ -13,6 +13,19 @@ import { watchSites, stopWatching } from "./site-watcher"
 
 const dir = path.resolve(__dirname, `..`)
 
+function makeWindow(): BrowserWindow {
+  return new BrowserWindow({
+    title: `Gatsby Desktop`,
+    titleBarStyle: `hidden`,
+    fullscreenable: false,
+    show: !process.env.GATSBY_DEVELOP_URL,
+    webPreferences: {
+      nodeIntegrationInWorker: true,
+      nodeIntegration: true,
+    },
+  })
+}
+
 async function start(): Promise<void> {
   /**
    * Start a static server to serve the app's resources.
@@ -24,6 +37,11 @@ async function start(): Promise<void> {
     .use(serveStatic(path.resolve(dir, `public`)))
     .listen(port)
 
+  const makeUrl = (path: string): string =>
+    process.env.GATSBY_DEVELOP_URL
+      ? `${process.env.GATSBY_DEVELOP_URL}/${path}`
+      : `http://localhost:${port}/${path}`
+
   const mb = menubar({
     dir,
     icon: path.resolve(dir, `assets`, `IconTemplate.png`),
@@ -31,7 +49,7 @@ async function start(): Promise<void> {
     preloadWindow: !process.env.GATSBY_DEVELOP_URL,
     // If we're running develop we pass in a URL, otherwise use the one
     // of the express server we just started
-    index: process.env.GATSBY_DEVELOP_URL || `http://localhost:${port}`,
+    index: makeUrl(`menubar`),
     browserWindow: {
       webPreferences: {
         nodeIntegrationInWorker: true,
@@ -40,7 +58,30 @@ async function start(): Promise<void> {
     },
   })
 
+  let mainWindow: BrowserWindow | undefined
+
+  app.on(`ready`, () => {
+    mainWindow = makeWindow()
+    // If we're not running develop we can preload the start page
+
+    if (!process.env.GATSBY_DEVELOP_URL) {
+      mainWindow.loadURL(makeUrl(`sites`))
+      mainWindow.show()
+    }
+  })
+
   const childPids = new Set<number>()
+
+  ipcMain.on(`open-main`, async (event, payload?: string) => {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      mainWindow = makeWindow()
+    }
+    const url = makeUrl(payload ? `sites/${payload}` : `sites`)
+    if (mainWindow.webContents.getURL() !== url) {
+      mainWindow.loadURL(url)
+    }
+    mainWindow.show()
+  })
 
   ipcMain.on(`add-child-pid`, (event, payload: number) => {
     childPids.add(payload)

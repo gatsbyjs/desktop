@@ -11,6 +11,9 @@ import {
   createServiceLock,
   getService,
 } from "gatsby-core-utils/dist/service-lock"
+
+import { createContentDigest } from "gatsby-core-utils"
+
 import { ipcRenderer } from "electron"
 
 const workerUrl = `/launcher.js`
@@ -80,6 +83,7 @@ export class GatsbySite {
   runner?: Worker
   siteStatus: ISiteStatus = DEFAULT_STATUS
   startedInApp?: boolean
+  hash: string
 
   private _listeners = new Set<(status: ISiteStatus, action?: Action) => void>()
 
@@ -88,6 +92,7 @@ export class GatsbySite {
     public name: string = `Unnamed site`,
     saveMetadata = false
   ) {
+    this.hash = createContentDigest(root)
     if (saveMetadata) {
       this.saveMetadataToServiceConfig()
     } else {
@@ -96,7 +101,7 @@ export class GatsbySite {
   }
 
   /**
-   * Spawns a Worker to run `gateby develop` and sets up listeners to
+   * Spawns a Worker to run `gatsby develop` and sets up listeners to
    * receive logs
    */
 

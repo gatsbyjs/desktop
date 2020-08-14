@@ -125,6 +125,15 @@ export function useSiteRunners(): {
 }
 
 /**
+ * Gets a single site by hash
+ */
+
+export function useSiteForHash(hash: string): GatsbySite | undefined {
+  const { sites } = useSiteRunners()
+  return sites.find((site) => site.hash === hash)
+}
+
+/**
  * Gets the status of an individual site
  */
 export function useSiteRunnerStatus(theSite: GatsbySite): ISiteStatus {
