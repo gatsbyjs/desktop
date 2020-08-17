@@ -1,4 +1,4 @@
-# Gatsby Desktop
+# Gatsby Desktop ![Github](https://img.shields.io/github/license/gatsbyjs/desktop?logo=Gatsby)
 
 A proof-of-concept desktop app for managing your Gatsby sites.
 
