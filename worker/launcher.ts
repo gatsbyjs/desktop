@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { IProgram } from "gatsby/internal"
 import fs from "fs"
 import { fork, ChildProcess } from "child_process"
@@ -114,8 +115,11 @@ async function launchSite(program: IProgram): Promise<number> {
     // structured logs
     stdio: [`pipe`, `pipe`, `pipe`, `ipc`],
     cwd: program.directory,
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    env: { ...process.env, FORCE_COLOR: `1` },
+    env: {
+      ...process.env,
+      FORCE_COLOR: `1`,
+      GATSBY_EXPERIMENTAL_ENABLE_ADMIN: `1`,
+    },
   })
 
   logAction({ type: `SET_PID`, payload: proc.pid })

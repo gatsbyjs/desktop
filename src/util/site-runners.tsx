@@ -14,6 +14,8 @@ import {
   ISiteMetadata,
 } from "../controllers/site"
 import { ipcRenderer } from "electron"
+import { useConfig } from "./use-config"
+import { isDefined } from "./helpers"
 
 /**
  * This module uses shared context to store the list of user sites.
@@ -131,6 +133,38 @@ export function useSiteRunners(): {
 export function useSiteForHash(hash: string): GatsbySite | undefined {
   const { sites } = useSiteRunners()
   return sites.find((site) => site.hash === hash)
+}
+
+/**
+ * Handles the site tabs
+ */
+
+export function useSiteTabs(): {
+  siteTabs: Array<GatsbySite>
+  addTab: (siteHash: string) => void
+  removeTab: (siteHash: string) => void
+  setTabs: (siteHashes: Array<string>) => void
+} {
+  const [tabs = [], setTabs] = useConfig(`siteTabs`)
+  const { sites } = useSiteRunners()
+
+  // The config value is an array of site hashes. This finds the matching
+  // sites from context and returns an array of these.
+  const siteTabs: Array<GatsbySite> = tabs
+    .map((tab) => sites.find((site) => site.hash === tab))
+    .filter(isDefined)
+
+  // Neither of these are the most efficient, but the array is always small
+  const addTab = (siteHash: string): void => {
+    const newTabs = Array.from(new Set([...tabs, siteHash]))
+    console.log(`adding tab`, { tabs, siteHash, newTabs })
+    setTabs(newTabs)
+  }
+
+  const removeTab = (siteHash: string): void =>
+    setTabs(tabs.filter((tab) => tab !== siteHash))
+  console.log({ siteTabs })
+  return { siteTabs, addTab, removeTab, setTabs }
 }
 
 /**

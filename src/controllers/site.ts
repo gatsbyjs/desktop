@@ -93,6 +93,7 @@ export class GatsbySite {
     saveMetadata = false
   ) {
     this.hash = createContentDigest(root)
+    console.log({ hash: this.hash, root })
     if (saveMetadata) {
       this.saveMetadataToServiceConfig()
     } else {

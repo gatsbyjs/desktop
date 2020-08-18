@@ -1,9 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import {
-  useSiteRunnerStatus,
-  useSiteForHash,
-} from "../../components/site-runners"
+import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
 
 import { TabNavigation } from "../../components/tab-navigation"
 

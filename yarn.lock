@@ -5096,11 +5096,6 @@ electron-builder@^22.8.0:
     update-notifier "^4.1.0"
     yargs "^15.3.1"
 
-electron-positioner@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/electron-positioner/-/electron-positioner-4.1.0.tgz#e158f8f6aabd6725a8a9b4f2279b9504bcbea1b0"
-  integrity sha512-726DfbI9ZNoCg+Fcu6XLuTKTnzf+6nFqv7h+K/V6Ug7IbaPMI7s9S8URnGtWFCy5N5PL4HSzRFF2mXuinftDdg==
-
 electron-publish@22.8.0:
   version "22.8.0"
   resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-22.8.0.tgz#7f410fe043abc5d3d896c4ee9eea7a43ea352c7d"
@@ -9010,13 +9005,6 @@ memorystream@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/memorystream/-/memorystream-0.3.1.tgz#86d7090b30ce455d63fbae12dda51a47ddcaf9b2"
   integrity sha1-htcJCzDORV1j+64S3aUaR93K+bI=
-
-menubar@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/menubar/-/menubar-9.0.1.tgz#49d8d73ee0b515d6621d644fa96647e3dfc8ac3c"
-  integrity sha512-r4NdeG3CDb9BQ0w8WffWw2JT+Pugn22hKCb4niNuXMzK3WphY+RX2WmTPlZdIZfpNxVNKAo/mbuGfVP6LGGeJw==
-  dependencies:
-    electron-positioner "^4.1.0"
 
 merge-descriptors@1.0.1:
   version "1.0.1"

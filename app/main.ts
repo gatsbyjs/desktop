@@ -1,6 +1,5 @@
-import { menubar } from "menubar"
 import path from "path"
-import { ipcMain, dialog, app, BrowserWindow } from "electron"
+import { ipcMain, dialog, app, BrowserWindow, Tray, Menu } from "electron"
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
@@ -19,6 +18,7 @@ function makeWindow(): BrowserWindow {
     titleBarStyle: `hidden`,
     fullscreenable: false,
     show: !process.env.GATSBY_DEVELOP_URL,
+    trafficLightPosition: { x: 8, y: 18 },
     webPreferences: {
       nodeIntegrationInWorker: true,
       nodeIntegration: true,
@@ -42,26 +42,50 @@ async function start(): Promise<void> {
       ? `${process.env.GATSBY_DEVELOP_URL}/${path}`
       : `http://localhost:${port}/${path}`
 
-  const mb = menubar({
-    dir,
-    icon: path.resolve(dir, `assets`, `IconTemplate.png`),
-    // In prod we can preload the window. In develop we need to wait for Gatsby to load
-    preloadWindow: !process.env.GATSBY_DEVELOP_URL,
-    // If we're running develop we pass in a URL, otherwise use the one
-    // of the express server we just started
-    index: makeUrl(`menubar`),
-    browserWindow: {
-      webPreferences: {
-        nodeIntegrationInWorker: true,
-        nodeIntegration: true,
-      },
-    },
-  })
-
   let mainWindow: BrowserWindow | undefined
+
+  function openMainWindow(): void {
+    console.log(`opening main`)
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      mainWindow = makeWindow()
+      mainWindow.loadURL(makeUrl(`sites`))
+    } else {
+      if (!mainWindow.webContents.getURL()) {
+        mainWindow.loadURL(makeUrl(`sites`))
+      }
+    }
+    mainWindow.show()
+  }
 
   app.on(`ready`, () => {
     mainWindow = makeWindow()
+
+    const tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: `Show Gatsby Desktop`,
+        click: openMainWindow,
+      },
+      {
+        label: `Quit...`,
+        click: async (): Promise<void> => {
+          openMainWindow()
+          const { response } = await dialog.showMessageBox({
+            message: `Quit Gatsby Desktop?`,
+            detail: `This will stop all running sites`,
+            buttons: [`Cancel`, `Quit`],
+            defaultId: 1,
+            type: `question`,
+          })
+
+          if (response === 1) {
+            app.quit()
+          }
+        },
+      },
+    ])
+    tray.setContextMenu(contextMenu)
+
     // If we're not running develop we can preload the start page
 
     if (!process.env.GATSBY_DEVELOP_URL) {
@@ -142,10 +166,6 @@ async function start(): Promise<void> {
     return {
       error: `The selected folder is not a Gatsby site. Please try another`,
     }
-  })
-
-  mb.on(`ready`, () => {
-    console.log(`app is ready`)
   })
 }
 

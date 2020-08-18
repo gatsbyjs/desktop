@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import { useSiteRunners } from "../components/site-runners"
+import { useSiteRunners } from "../util/site-runners"
 import { SitePreview } from "../components/site-preview"
 import { SiteBrowser } from "../components/site-browser"
 import { EmptyState } from "gatsby-interface"
