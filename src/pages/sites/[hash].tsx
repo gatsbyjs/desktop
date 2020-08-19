@@ -1,5 +1,6 @@
 /** @jsx jsx */
-import { jsx } from "theme-ui"
+import { jsx, Flex } from "theme-ui"
+import { Text } from "gatsby-interface"
 import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
 
 import { TabNavigation } from "../../components/tab-navigation"
@@ -23,8 +24,21 @@ export default function SitePage({ params }: IProps): JSX.Element {
   const { running, port } = useSiteRunnerStatus(site)
 
   return (
-    <div>
-      <TabNavigation /> <p>Hi {site?.name}</p>
-    </div>
+    <Flex sx={{ flexDirection: `column`, height: `100vh` }}>
+      <TabNavigation />
+      <Text>{site?.name}. Admin should show in an iframe below this.</Text>
+      {running && port ? (
+        <iframe
+          frameBorder={0}
+          src={`http://localhost:${port}/___`}
+          sx={{
+            flex: 1,
+          }}
+          onError={() => console.error(`iframe error`)}
+        />
+      ) : (
+        <Text>Not running</Text>
+      )}
+    </Flex>
   )
 }
