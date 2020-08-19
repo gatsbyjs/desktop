@@ -163,6 +163,9 @@ export async function watchSites(
 
   async function metadataChanged(path: string): Promise<void> {
     const json = await getSiteInfo(path)
+    if (json.name === `gatsby-desktop`) {
+      return
+    }
     console.log(`changed`, json)
     const oldJson = JSON.stringify(sites.get(path) || {})
     if (JSON.stringify(oldJson) === JSON.stringify(json)) {

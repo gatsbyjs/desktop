@@ -26,7 +26,6 @@ export default function SitePage({ params }: IProps): JSX.Element {
   return (
     <Flex sx={{ flexDirection: `column`, height: `100vh` }}>
       <TabNavigation />
-      <Text>{site?.name}. Admin should show in an iframe below this.</Text>
       {running && port ? (
         <iframe
           frameBorder={0}
