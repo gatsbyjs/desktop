@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import { Button, Modal, ModalPanel } from "gatsby-interface"
+import { Button, Modal, ModalPanel, ModalCard } from "gatsby-interface"
 import { MdFeaturedPlayList, MdWarning } from "react-icons/md"
 import { useCallback, Fragment, useState } from "react"
 import { Status } from "../controllers/site"
@@ -40,10 +40,10 @@ export function LogsLauncher({ logs, status }: IProps): JSX.Element {
       >
         {error ? `View Errors` : `View logs`}
       </Button>
-      <Modal isOpen={isOpen}>
-        <ModalPanel position="right" sx={{ width: `100vw` }}>
+      <Modal aria-label="Logs viewer" isOpen={isOpen} onDismiss={toggleLogs}>
+        <ModalCard css={{ height: `70vh` }}>
           <LogsViewer logs={logs} onDismiss={toggleLogs} isOpen={isOpen} />
-        </ModalPanel>
+        </ModalCard>
       </Modal>
     </Fragment>
   )
