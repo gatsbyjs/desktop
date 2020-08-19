@@ -25,13 +25,12 @@ export function ConfigProvider({
 }: {
   children: ReactNode
 }): JSX.Element {
-  const [store, setStore] = useState<Store<IConfigType>>()
-  useEffect(() => {
-    setStore(new Store())
-  })
-
   return (
-    <ConfigContext.Provider value={store}>{children}</ConfigContext.Provider>
+    <ConfigContext.Provider
+      value={typeof window !== `undefined` ? new Store() : undefined}
+    >
+      {children}
+    </ConfigContext.Provider>
   )
 }
 
