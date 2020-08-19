@@ -11,6 +11,7 @@ import { SiteLauncher } from "./site-launcher"
 import { EditorLauncher } from "./editor-launcher"
 import { LogsLauncher } from "./logs-launcher"
 import { MdArrowForward } from "react-icons/md"
+import { navigate } from "gatsby"
 
 interface IProps {
   site: GatsbySite
@@ -32,14 +33,13 @@ function isRunning(status: Status): boolean {
  */
 
 export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { logs, status, running, port, pid, rawLogs } = useSiteRunnerStatus(
-    site
-  )
+  const { status, running, port, pid, rawLogs } = useSiteRunnerStatus(site)
 
   const { addTab } = useSiteTabs()
 
   const stop = useCallback(() => site?.stop(), [site])
   const start = useCallback(() => site?.start(), [site])
+  const clean = useCallback(() => site?.start(true), [site])
 
   function StartButton({ label }: { label: string }): JSX.Element {
     return (
@@ -52,7 +52,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         dropdownButtonLabel="More options"
         sx={{ fontFamily: `sans`, fontSize: 0 }}
       >
-        <DropdownMenuItem onSelect={(): void => console.log(`Clear`)}>
+        <DropdownMenuItem onSelect={clean}>
           <Text sx={{ fontFamily: `sans`, fontSize: 1 }} as="span">
             Clear Cache and Start
           </Text>
@@ -117,6 +117,7 @@ export function SitePreview({ site }: PropsWithChildren<IProps>): JSX.Element {
         onClick={(event): void => {
           event.stopPropagation()
           addTab(site.hash)
+          navigate(`/sites/${site.hash}`)
         }}
       >
         <MdArrowForward />
