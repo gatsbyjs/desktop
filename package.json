@@ -68,12 +68,10 @@
     "watch:renderer": "GATSBY_EXPERIMENTAL_ROUTING_APIS=1 gatsby develop --port=8079",
     "watch:main": "tsc -p app/tsconfig.json --watch",
     "build:main": "tsc -p app/tsconfig.json ",
-    "build:worker": "microbundle -i worker/launcher.ts -o static/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net build",
-    "watch:worker": "microbundle -i worker/launcher.ts -o static/launcher.js --no-pkg-main --tsconfig=worker/tsconfig.json -f cjs --compress=false --external=fs,constants,stream,child_process,os,net watch",
     "run:app": "electron --remote-debugging-port=8315 .",
     "watch:app": "GATSBY_DEVELOP_URL=http://localhost:8079 yarn run:app",
     "develop": "FORCE_COLOR=1 npm-run-all -l build:main --parallel watch:*",
-    "build": "npm-run-all build:worker --parallel build:renderer build:main",
+    "build": "npm-run-all --parallel build:renderer build:main",
     "package": "electron-builder"
   },
   "build": {
