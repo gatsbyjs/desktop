@@ -1,5 +1,13 @@
 import path from "path"
-import { ipcMain, dialog, app, BrowserWindow, Tray, Menu } from "electron"
+import {
+  ipcMain,
+  dialog,
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  Event,
+} from "electron"
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
@@ -8,7 +16,15 @@ import {
   loadPackageJson,
   hasGatsbyDependency,
 } from "./utils"
-import { watchSites, stopWatching } from "./site-watcher"
+import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
+import { SiteLauncher, Message } from "./launcher"
+import { Status, LogObject } from "./ipc-types"
+interface ISiteStatus {
+  startedInDesktop?: boolean
+  status: Status
+  logs: Array<LogObject>
+  rawLogs: Array<string>
+}
 
 const dir = path.resolve(__dirname, `..`)
 
@@ -44,8 +60,11 @@ async function start(): Promise<void> {
 
   let mainWindow: BrowserWindow | undefined
 
+  let siteList: Array<{ site: ISiteMetadata; status?: ISiteStatus }> = []
+
+  const siteLaunchers = new Map<string, SiteLauncher>()
+
   function openMainWindow(): void {
-    console.log(`opening main`)
     if (!mainWindow || mainWindow.isDestroyed()) {
       mainWindow = makeWindow()
       mainWindow.loadURL(makeUrl(`sites`))
@@ -57,10 +76,12 @@ async function start(): Promise<void> {
     mainWindow.show()
   }
 
+  let tray: Tray | undefined
+
   app.on(`ready`, () => {
     mainWindow = makeWindow()
 
-    const tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
+    tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
     const contextMenu = Menu.buildFromTemplate([
       {
         label: `Show Gatsby Desktop`,
@@ -86,6 +107,25 @@ async function start(): Promise<void> {
     ])
     tray.setContextMenu(contextMenu)
 
+    watchSites((sites) => {
+      siteList = sites.map((site) => {
+        const launcher = site.hash && siteLaunchers.get(site.hash)
+        if (!launcher) {
+          return {
+            site,
+          }
+        }
+        const { logs, rawLogs, status } = launcher
+        return {
+          site,
+          status: { startedInDesktop: true, logs, rawLogs, status },
+        }
+      })
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow?.webContents?.send(`sites-updated`, siteList)
+      }
+    })
+
     // If we're not running develop we can preload the start page
 
     if (!process.env.GATSBY_DEVELOP_URL) {
@@ -93,8 +133,6 @@ async function start(): Promise<void> {
       mainWindow.show()
     }
   })
-
-  const childPids = new Set<number>()
 
   ipcMain.on(`open-main`, async (event, payload?: string) => {
     if (!mainWindow || mainWindow.isDestroyed()) {
@@ -107,33 +145,62 @@ async function start(): Promise<void> {
     mainWindow.show()
   })
 
-  ipcMain.on(`add-child-pid`, (event, payload: number) => {
-    childPids.add(payload)
-  })
+  ipcMain.on(
+    `launch-site`,
+    async (event, { root, hash, clean }): Promise<number | undefined> => {
+      if (!root || !hash) {
+        console.error(`Invalid launch params`, { root, hash })
+        return undefined
+      }
+      let launcher = siteLaunchers.get(hash)
+      if (!launcher) {
+        launcher = new SiteLauncher(root, hash)
+        launcher.setListener((message: Message) => {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents?.send(`site-message`, hash, message)
+          }
+        })
+        siteLaunchers.set(hash, launcher)
+      }
+      return launcher.start(clean)
+    }
+  )
 
-  ipcMain.on(`remove-child-pid`, (event, payload: number) => {
-    childPids.delete(payload)
-  })
-
-  ipcMain.on(`watch-sites`, (event) => {
-    watchSites((sites) => {
-      console.log(`Got sites`, sites)
-      event.sender.send(`sites-updated`, sites)
-    })
-  })
-
-  ipcMain.on(`unwatch-sites`, () => {
-    stopWatching()
-  })
+  ipcMain.on(
+    `stop-site`,
+    async (event, { hash, pid }): Promise<void> => {
+      if (!hash) {
+        console.error(`Missing site hash`)
+        return
+      }
+      const launcher = siteLaunchers.get(hash)
+      if (launcher) {
+        launcher.stop()
+        return
+      }
+      if (pid) {
+        console.error(`Site not found`)
+      }
+      process.kill(pid)
+    }
+  )
 
   app.on(`before-quit`, () => {
-    childPids.forEach((pid) => process.kill(pid))
+    siteLaunchers.forEach((site) => site.stop())
     stopWatching()
+  })
+
+  app.on(`activate`, (event, hasVisibleWindows) => {
+    if (!hasVisibleWindows) {
+      openMainWindow()
+    }
   })
 
   ipcMain.on(`quit-app`, () => {
     app.quit()
   })
+
+  ipcMain.handle(`get-sites`, async () => siteList)
 
   // This request comes from the renderer
   ipcMain.handle(`browse-for-site`, async () => {
@@ -168,5 +235,10 @@ async function start(): Promise<void> {
     }
   })
 }
+
+app.on(`window-all-closed`, (event: Event) => {
+  //  Don't quit when all windows are closed
+  event.preventDefault()
+})
 
 start()

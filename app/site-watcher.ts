@@ -15,6 +15,7 @@ export interface ISiteMetadata {
   name?: string
   pid?: number
   lastRun?: number
+  hash?: string
 }
 
 export interface IServiceInfo {
@@ -143,6 +144,12 @@ export async function watchSites(
       if (!json.name) {
         json.name = packageJson.name
       }
+
+      if (!json.hash) {
+        const [hash] = metadataPath.split(`/`)
+        json.hash = hash
+      }
+
       siteWatcher.add(sitePkgJsonPath)
     } catch (e) {
       console.log(`Couldn't load site`, e, sitePkgJsonPath)
@@ -161,6 +168,12 @@ export async function watchSites(
     if (JSON.stringify(oldJson) === JSON.stringify(json)) {
       return
     }
+
+    if (!json.hash) {
+      const [hash] = path.split(`/`)
+      json.hash = hash
+    }
+
     sites.set(path, json)
     update(sites)
   }

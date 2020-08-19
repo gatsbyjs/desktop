@@ -16,8 +16,6 @@ import { createContentDigest } from "gatsby-core-utils"
 
 import { ipcRenderer } from "electron"
 
-const workerUrl = `/launcher.js`
-
 // TODO: move these to gatsby-core-utils
 
 export interface ISiteMetadata {
@@ -25,6 +23,7 @@ export interface ISiteMetadata {
   name?: string
   lastRun?: number
   pid?: number
+  hash?: string
 }
 
 export interface IServiceInfo {
@@ -40,6 +39,11 @@ export interface ISiteInfo {
 export enum WorkerStatus {
   runningInBackground = `RUNNING_IN_BACKGROUND`,
   stopped = `STOPPED`,
+}
+
+export interface IMessage {
+  type: "message" | "error"
+  message: any
 }
 
 export type Status = GlobalStatus | WorkerStatus
@@ -80,25 +84,36 @@ const STOPPED_STATES = [GlobalStatus.NotStarted, GlobalStatus.Failed, `STOPPED`]
  * Represents a single user Gatsby site
  */
 export class GatsbySite {
-  runner?: Worker
   siteStatus: ISiteStatus = DEFAULT_STATUS
-  startedInApp?: boolean
-  hash: string
+  startedInDesktop?: boolean
 
   private _listeners = new Set<(status: ISiteStatus, action?: Action) => void>()
 
   constructor(
     public root: string,
     public name: string = `Unnamed site`,
+    public hash: string = createContentDigest(root),
     saveMetadata = false
   ) {
-    this.hash = createContentDigest(root)
-    console.log({ hash: this.hash, root })
     if (saveMetadata) {
       this.saveMetadataToServiceConfig()
     } else {
       this.loadFromServiceConfig()
     }
+    ipcRenderer.on(`site-message`, (event, hash: string, message: IMessage) => {
+      if (hash !== this.hash) {
+        // Not for us
+        return
+      }
+      if (
+        message?.type === `message` &&
+        message?.message?.type === IPCMessageType.LogAction
+      ) {
+        this.handleMessage(message?.message?.action)
+      } else {
+        console.log(`Message received from worker`, message)
+      }
+    })
   }
 
   /**
@@ -106,11 +121,8 @@ export class GatsbySite {
    * receive logs
    */
 
-  public start(): void {
-    if (this.siteStatus.running) {
-      this.stop()
-    }
-    this.startedInApp = true
+  public start(clean: boolean = false): void {
+    this.startedInDesktop = true
     this.updateLastRun()
     this.updateStatus({
       running: true,
@@ -120,24 +132,7 @@ export class GatsbySite {
       status: GlobalStatus.InProgress,
     })
 
-    const program: Partial<IProgram> = {
-      directory: this.root,
-    }
-    this.runner = new Worker(workerUrl)
-    this.runner.onerror = (e): void => {
-      this.logMessage(`Error: ${e.message}`)
-    }
-    this.runner.postMessage({ type: `launch`, program })
-    this.runner.onmessage = (e): void => {
-      if (
-        e.data?.type === `message` &&
-        e.data?.message?.type === IPCMessageType.LogAction
-      ) {
-        this.handleMessage(e.data?.message?.action)
-      } else {
-        console.log(`Message received from worker`, e.data)
-      }
-    }
+    ipcRenderer.send(`launch-site`, { root: this.root, hash: this.hash, clean })
   }
 
   public updateStatus(newStatus: Partial<ISiteStatus>): void {
@@ -216,18 +211,7 @@ export class GatsbySite {
   }
 
   public stop(): void {
-    if (!this.runner) {
-      // Started outside Desktop
-      if (this.siteStatus?.pid) {
-        process.kill(this.siteStatus?.pid)
-        this.updateStatus({ status: WorkerStatus.stopped, running: false })
-        return
-      }
-      console.log(`No runner or pid`)
-      return
-    }
-    this.runner.postMessage({ type: `stop` })
-    this.runner = undefined
+    ipcRenderer.send(`stop-site`, { hash: this.hash, pid: this.siteStatus.pid })
     this.updateStatus({ status: WorkerStatus.stopped, running: false })
   }
 
@@ -271,9 +255,6 @@ export class GatsbySite {
         break
 
       case WorkerActionType.exit:
-        if (this.siteStatus.pid) {
-          ipcRenderer.send(`remove-child-pid`, this.siteStatus.pid)
-        }
         this.updateStatus({
           running: false,
           pid: undefined,
@@ -294,7 +275,6 @@ export class GatsbySite {
       case WorkerActionType.setPid:
         // payload is pid
         this.updateStatus({ pid: action.payload as number })
-        ipcRenderer.send(`add-child-pid`, action.payload)
         break
 
       case WorkerActionType.rawLog:

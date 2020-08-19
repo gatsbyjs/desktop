@@ -57,6 +57,7 @@ export function RunnerProvider({
       const site = new GatsbySite(
         siteInfo.path,
         siteInfo.packageJson.name,
+        undefined,
         true
       )
       sitesMap.set(site.root, site)
@@ -69,27 +70,36 @@ export function RunnerProvider({
 
   const updateFromSiteList = useCallback(
     async (
-      event: Electron.IpcRendererEvent,
-      siteList: Array<ISiteMetadata>
+      event: Electron.IpcRendererEvent | undefined,
+      siteList: Array<{
+        site: ISiteMetadata
+        status?: ISiteStatus & { startedInDesktop: boolean }
+      }>
     ): Promise<void> => {
       console.log(`got new sites`, siteList)
       // Takes the sorted array of site metadata and converts
       // to a sorted array for `GatsbySite`s.
       const newSites = await Promise.all(
-        siteList.map(async (metadata) => {
-          const existingSite = sitesMap.get(metadata.sitePath)
+        siteList.map(async ({ site, status }) => {
+          const existingSite = sitesMap.get(site.sitePath)
           if (existingSite) {
             console.log(`loading existing site service config`)
-            existingSite.name = metadata.name || existingSite.name
+            existingSite.name = site.name || existingSite.name
+            existingSite.startedInDesktop = status?.startedInDesktop
             existingSite.updateStatus({
-              pid: metadata.pid,
+              pid: site.pid,
             })
             await existingSite.loadFromServiceConfig()
             return existingSite
           }
-          console.log(`loading new site`, metadata)
-          const newSite = new GatsbySite(metadata.sitePath, metadata.name)
-          sitesMap.set(metadata.sitePath, newSite)
+          console.log(`loading new site`, site)
+          const newSite = new GatsbySite(site.sitePath, site.name)
+          if (status) {
+            newSite.updateStatus(status)
+            newSite.startedInDesktop = status?.startedInDesktop
+          }
+
+          sitesMap.set(site.sitePath, newSite)
           return newSite
         })
       )
@@ -99,11 +109,14 @@ export function RunnerProvider({
   )
 
   useEffect(() => {
+    async function getSites(): Promise<void> {
+      const siteList = await ipcRenderer.invoke(`get-sites`)
+      updateFromSiteList(undefined, siteList)
+    }
+    getSites()
     ipcRenderer.on(`sites-updated`, updateFromSiteList)
-    ipcRenderer.send(`watch-sites`)
     return (): void => {
       ipcRenderer.off(`sites-updated`, updateFromSiteList)
-      ipcRenderer.send(`unwatch-sites`)
     }
   }, [])
 
