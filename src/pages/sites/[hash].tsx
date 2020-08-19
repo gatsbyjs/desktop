@@ -30,11 +30,11 @@ export default function SitePage({ params }: IProps): JSX.Element {
       {running && port ? (
         <iframe
           frameBorder={0}
-          src={`http://localhost:${port}/___`}
+          src={`http://localhost:${port}/___admin`}
           sx={{
             flex: 1,
           }}
-          onError={() => console.error(`iframe error`)}
+          onError={(): void => console.error(`iframe error`)}
         />
       ) : (
         <Text>Not running</Text>
