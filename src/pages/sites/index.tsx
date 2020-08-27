@@ -3,7 +3,8 @@ import { jsx, Grid } from "theme-ui"
 import { useSiteRunners } from "../../util/site-runners"
 import { SitePreview } from "../../components/site-preview"
 import { TabNavigation } from "../../components/tab-navigation"
-import { Heading, Text } from "gatsby-interface"
+import { Heading, Text, LinkButton } from "gatsby-interface"
+import { MdArrowForward } from "react-icons/md"
 
 export default function MainPage(): JSX.Element {
   const { sites } = useSiteRunners()
@@ -35,6 +36,15 @@ export default function MainPage(): JSX.Element {
           <Text as="span" size="S">
             ({sites.length})
           </Text>
+          <LinkButton
+            to="/onboarding"
+            size="S"
+            variant="SECONDARY"
+            rightIcon={<MdArrowForward />}
+            sx={{ float: `right` }}
+          >
+            Onboarding
+          </LinkButton>
         </Heading>
         <Grid
           gap={8}
