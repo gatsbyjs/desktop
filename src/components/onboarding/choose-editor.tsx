@@ -41,15 +41,15 @@ export function ChooseEditor({
         <EditorsRadioButton
           name="preferredEditor"
           editors={[
-            `vscode`,
+            `code`,
             `sublime`,
             `atom`,
             `webstorm`,
             `phpstorm`,
-            `intellij`,
+            `idea14ce`,
             `vim`,
             `emacs`,
-            `vsstudio`,
+            `visualstudio`,
           ]}
           onChange={(e): void => {
             setPreferredEditor(e.target.value)

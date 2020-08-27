@@ -10,12 +10,12 @@ import {
 } from "gatsby-interface"
 import atom from "../../../assets/editors/atom.png"
 import emacs from "../../../assets/editors/emacs.png"
-import intellij from "../../../assets/editors/intellij.png"
+import idea14ce from "../../../assets/editors/intellij.png"
 import phpstorm from "../../../assets/editors/phpstorm.png"
 import sublime from "../../../assets/editors/sublime.png"
 import vim from "../../../assets/editors/vim.png"
-import vscode from "../../../assets/editors/vscode.png"
-import vsstudio from "../../../assets/editors/vsstudio.png"
+import code from "../../../assets/editors/vscode.png"
+import visualstudio from "../../../assets/editors/vsstudio.png"
 import webstorm from "../../../assets/editors/webstorm.png"
 import { visuallyHiddenCss } from "../../util/a11y"
 import { GroupInputCard } from "./group-input-card"
@@ -23,37 +23,37 @@ import { GroupInputCard } from "./group-input-card"
 const editorLabels: Record<CodeEditor, string> = {
   atom: `Atom`,
   emacs: `Emacs`,
-  intellij: `IntelliJ IDEA CE`,
+  idea14ce: `IntelliJ IDEA CE`,
   phpstorm: `PhpStorm`,
   sublime: `Sublime text`,
   vim: `Vim`,
-  vscode: `Visual Studio Code`,
-  vsstudio: `Visual Studio`,
+  code: `Visual Studio Code`,
+  visualstudio: `Visual Studio`,
   webstorm: `WebStorm`,
 }
 
 const editorLogos: Record<CodeEditor, string> = {
   atom,
   emacs,
-  intellij,
+  idea14ce,
   phpstorm,
   sublime,
   vim,
-  vscode,
-  vsstudio,
+  code,
+  visualstudio,
   webstorm,
 }
 
 export type CodeEditor =
-  | "vscode"
+  | "code"
   | "sublime"
   | "atom"
   | "webstorm"
   | "phpstorm"
-  | "intellij"
+  | "idea14ce"
   | "vim"
   | "emacs"
-  | "vsstudio"
+  | "visualstudio"
 
 export interface IProps {
   name: string
