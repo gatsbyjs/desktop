@@ -24,7 +24,9 @@ export function FolderName({ sitePath }: IProps): JSX.Element {
         alignItems: `center`,
       }}
     >
-      <MdFolderOpen size={12} /> <span sx={{ paddingLeft: 2 }}>{folder}</span>
+      <MdFolderOpen size={12} aria-label="Folder:" />
+      {` `}
+      <span sx={{ paddingLeft: 2 }}>{folder}</span>
     </Text>
   )
 }

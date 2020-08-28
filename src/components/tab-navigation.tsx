@@ -4,9 +4,10 @@ import { jsx, Flex } from "theme-ui"
 import { useSiteTabs } from "../util/site-runners"
 import { Link, GatsbyLinkProps, navigate } from "gatsby"
 import { GatsbySite } from "../controllers/site"
-import { useCallback, Fragment } from "react"
+import { useCallback } from "react"
 import { useLocation } from "@reach/router"
 import { MdClear } from "react-icons/md"
+import { SiteStatusDot } from "./site-status-dot"
 
 interface ITabProps extends Omit<GatsbyLinkProps<unknown>, "to" | "ref"> {
   site: GatsbySite
@@ -21,12 +22,16 @@ export function TabLink(
       activeClassName="active"
       sx={{
         fontFamily: `sans`,
-        fontSize: `12px`,
+        fontSize: 0,
         fontWeight: 500,
+        lineHeight: `solid`,
         textDecoration: `none`,
+        display: `flex`,
+        alignItems: `center`,
         color: `whiteFade.60`,
         py: 3,
-        px: 6,
+        pr: 2,
+        pl: 3,
         "&.active": {
           backgroundColor: `purple.80`,
           color: `white`,
@@ -48,25 +53,35 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
 
   const url = `/sites/${site.hash}`
 
+  const isActive = location.pathname === url
+
   const remove = useCallback(() => {
-    if (location.pathname === url) {
+    if (isActive) {
       navigate(`/sites`)
     }
     removeTab(site.hash)
-  }, [removeTab, site, location])
+  }, [removeTab, site, isActive])
 
   return (
-    <Fragment>
+    <Flex
+      sx={{
+        alignItems: `center`,
+        pr: 2,
+        ...(isActive && {
+          backgroundColor: `purple.80`,
+          color: `white`,
+        }),
+      }}
+    >
       <TabLink {...props} to={url}>
+        <SiteStatusDot status={site.siteStatus.status} sx={{ mr: 2 }} />
         {site.name}
       </TabLink>
       <button
         onClick={remove}
         aria-label="Close tab"
         sx={{
-          transform: `translateX(-24px)`,
           p: 3,
-          marginRight: `-24px`,
           background: `none`,
           border: `none`,
           fontFamily: `sans`,
@@ -79,7 +94,7 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
       >
         <MdClear />
       </button>
-    </Fragment>
+    </Flex>
   )
 }
 

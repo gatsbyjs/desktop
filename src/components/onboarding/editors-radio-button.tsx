@@ -8,52 +8,9 @@ import {
   FormError,
   StyledRadioButton,
 } from "gatsby-interface"
-import atom from "../../../assets/editors/atom.png"
-import emacs from "../../../assets/editors/emacs.png"
-import idea14ce from "../../../assets/editors/intellij.png"
-import phpstorm from "../../../assets/editors/phpstorm.png"
-import sublime from "../../../assets/editors/sublime.png"
-import vim from "../../../assets/editors/vim.png"
-import code from "../../../assets/editors/vscode.png"
-import visualstudio from "../../../assets/editors/vsstudio.png"
-import webstorm from "../../../assets/editors/webstorm.png"
 import { visuallyHiddenCss } from "../../util/a11y"
 import { GroupInputCard } from "./group-input-card"
-
-const editorLabels: Record<CodeEditor, string> = {
-  atom: `Atom`,
-  emacs: `Emacs`,
-  idea14ce: `IntelliJ IDEA CE`,
-  phpstorm: `PhpStorm`,
-  sublime: `Sublime text`,
-  vim: `Vim`,
-  code: `Visual Studio Code`,
-  visualstudio: `Visual Studio`,
-  webstorm: `WebStorm`,
-}
-
-const editorLogos: Record<CodeEditor, string> = {
-  atom,
-  emacs,
-  idea14ce,
-  phpstorm,
-  sublime,
-  vim,
-  code,
-  visualstudio,
-  webstorm,
-}
-
-export type CodeEditor =
-  | "code"
-  | "sublime"
-  | "atom"
-  | "webstorm"
-  | "phpstorm"
-  | "idea14ce"
-  | "vim"
-  | "emacs"
-  | "visualstudio"
+import { CodeEditor, editorLabels, editorLogos } from "../../util/editors"
 
 export interface IProps {
   name: string

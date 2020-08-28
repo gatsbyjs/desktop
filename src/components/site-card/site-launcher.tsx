@@ -1,9 +1,8 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import { Button } from "gatsby-interface"
-import { MdOpenInNew } from "react-icons/md"
 import { shell } from "electron"
 import { useCallback } from "react"
+import { GhostButton } from "./ghost-button"
 
 export interface IProps {
   port: number
@@ -14,20 +13,8 @@ export function SiteLauncher({ port }: IProps): JSX.Element {
     shell.openExternal(`http://localhost:${port}`)
   }, [])
   return (
-    <Button
-      onClick={openUrl}
-      variant="GHOST"
-      size="M"
-      rightIcon={<MdOpenInNew />}
-      sx={{
-        fontFamily: `sans`,
-        color: `gatsby`,
-        fontWeight: 600,
-        fontSize: 0,
-        paddingLeft: 0,
-      }}
-    >
+    <GhostButton onClick={openUrl} size="S">
       localhost:{port}
-    </Button>
+    </GhostButton>
   )
 }

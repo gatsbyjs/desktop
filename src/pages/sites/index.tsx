@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, Grid } from "theme-ui"
 import { useSiteRunners } from "../../util/site-runners"
-import { SitePreview } from "../../components/site-preview"
+import { SiteCard } from "../../components/site-card/site-card"
 import { TabNavigation } from "../../components/tab-navigation"
 import { Heading, Text, LinkButton } from "gatsby-interface"
 import { MdArrowForward } from "react-icons/md"
@@ -49,10 +49,10 @@ export default function MainPage(): JSX.Element {
         <Grid
           gap={8}
           marginTop={7}
-          columns="repeat(auto-fit, minmax(320px, 1fr))"
+          columns="repeat(auto-fit, minmax(480px, 1fr))"
         >
           {sites.map((site) => (
-            <SitePreview key={site.hash} site={site} />
+            <SiteCard key={site.hash} site={site} />
           ))}
         </Grid>
       </main>
