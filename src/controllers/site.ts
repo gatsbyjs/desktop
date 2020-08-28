@@ -41,6 +41,17 @@ export enum WorkerStatus {
   stopped = `STOPPED`,
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
+export enum SiteError {
+  NoGatsbyRepo = `NO_GATSBY_REPO`,
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
+export interface ISiteError {
+  error: SiteError
+  message: string
+}
+
 export interface IMessage {
   type: "message" | "error"
   message: any

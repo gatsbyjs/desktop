@@ -18,7 +18,7 @@ import {
 } from "./utils"
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
-import { Status, LogObject } from "./ipc-types"
+import { Status, LogObject, SiteError } from "./ipc-types"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -231,7 +231,8 @@ async function start(): Promise<void> {
       console.log(e)
     }
     return {
-      error: `The selected folder is not a Gatsby site. Please try another`,
+      error: SiteError.NoGatsbyRepo,
+      message: `The selected folder is not a Gatsby site. Please try another`,
     }
   })
 }

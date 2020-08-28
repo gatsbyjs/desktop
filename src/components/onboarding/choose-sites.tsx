@@ -10,6 +10,8 @@ import {
   OnboardingWizardStepActions,
   IProps as WizardStepProps,
 } from "./onboarding-wizard-step"
+import { SiteBrowser } from "../site-browser"
+import { ISiteInfo } from "../../controllers/site"
 
 export interface IProps
   extends Pick<WizardStepProps, "currentStep" | "totalSteps"> {
@@ -21,13 +23,13 @@ export function ChooseSites({
   totalSteps,
   onGoNext,
 }: IProps): JSX.Element {
-  const { sites } = useSiteRunners()
+  const { sites, addSite } = useSiteRunners()
   const [hasAddedFirstSite, setHasAddedFirstSite] = React.useState<boolean>(
     false
   )
 
-  const onAddSite = (): void => {
-    // TODO let user to pick a site, then call setHasAddedFirstSite(true) if the site has been successfully added
+  const onAddSite = (siteInfo: ISiteInfo): void => {
+    addSite?.(siteInfo)
     setHasAddedFirstSite(true)
   }
 
@@ -97,14 +99,15 @@ export function ChooseSites({
           <SiteCheckboxGroup name="sitesToImport" sites={sites} />
         )}
         <OnboardingWizardStepActions>
-          <Button
+          <SiteBrowser
             type="button"
             variant={noSites ? `PRIMARY` : `SECONDARY`}
+            size="L"
             sx={{ mr: 5 }}
-            onClick={onAddSite}
+            onSelectSite={onAddSite}
           >
             Add a site
-          </Button>
+          </SiteBrowser>
           {!noSites && (
             <Button type="submit" rightIcon={<MdArrowForward />}>
               Start using Gatsby Desktop
