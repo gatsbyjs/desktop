@@ -1,8 +1,8 @@
 /** @jsx jsx */
-import { jsx, Box } from "theme-ui"
+import { jsx } from "theme-ui"
 import React from "react"
 import { useSiteRunners } from "../../util/site-runners"
-import { Button, Heading, ThemeCss, Text } from "gatsby-interface"
+import { Button, EmptyState } from "gatsby-interface"
 import { SiteCheckboxGroup } from "./sites-checkbox-group"
 import { MdArrowForward } from "react-icons/md"
 import {
@@ -71,49 +71,50 @@ export function ChooseSites({
     >
       <form onSubmit={onSubmit}>
         {noSites ? (
-          <Box
-            css={((theme) => theme.cardStyles.frame) as ThemeCss}
-            sx={{
-              borderWidth: 1,
-              borderStyle: `solid`,
-              borderColor: `blackFade.10`,
-              fontSize: 1,
-              color: `grey.60`,
-              px: 7,
-              py: 5,
-            }}
-          >
-            <Heading
-              as="h2"
-              sx={{ color: `grey.80`, mt: 0, mb: 5, fontSize: `inherit` }}
-            >
-              Are you missing some of your Gatsby sites?
-            </Heading>
-            <Text sx={{ m: 0, fontSize: `inherit` }}>
-              Gatsby Desktop is only able to auto-discover Gatsby sites using
-              Gatsby vX.XX.XX or newer. Don’t worry— you can add sites using
-              older versions manually and still manage them in Gatsby Desktop.
-            </Text>
-          </Box>
+          <div sx={{ maxWidth: `52rem` }}>
+            <EmptyState
+              variant="BORDERED"
+              heading="Are you missing some of your Gatsby sites?"
+              text={
+                <React.Fragment>
+                  Gatsby Desktop is only able to auto-discover Gatsby sites
+                  using Gatsby vX.XX.XX or newer. Don’t worry— you can add sites
+                  using older versions manually and still manage them in Gatsby
+                  Desktop.
+                </React.Fragment>
+              }
+              primaryAction={
+                <SiteBrowser
+                  type="button"
+                  variant={noSites ? `PRIMARY` : `SECONDARY`}
+                  size="L"
+                  sx={{ mr: 5 }}
+                  onSelectSite={onAddSite}
+                >
+                  Add a site
+                </SiteBrowser>
+              }
+            />
+          </div>
         ) : (
           <SiteCheckboxGroup name="sitesToImport" sites={sites} />
         )}
-        <OnboardingWizardStepActions>
-          <SiteBrowser
-            type="button"
-            variant={noSites ? `PRIMARY` : `SECONDARY`}
-            size="L"
-            sx={{ mr: 5 }}
-            onSelectSite={onAddSite}
-          >
-            Add a site
-          </SiteBrowser>
-          {!noSites && (
+        {!noSites && (
+          <OnboardingWizardStepActions>
+            <SiteBrowser
+              type="button"
+              variant={noSites ? `PRIMARY` : `SECONDARY`}
+              size="L"
+              sx={{ mr: 5 }}
+              onSelectSite={onAddSite}
+            >
+              Add a site
+            </SiteBrowser>
             <Button type="submit" rightIcon={<MdArrowForward />}>
               Start using Gatsby Desktop
             </Button>
-          )}
-        </OnboardingWizardStepActions>
+          </OnboardingWizardStepActions>
+        )}
       </form>
     </OnboardingWizardStep>
   )
