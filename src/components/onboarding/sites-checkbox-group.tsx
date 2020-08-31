@@ -41,7 +41,7 @@ export function SiteCheckboxGroup({
         css={visuallyHiddenCss}
         {...getLegendProps(`Select the sites you want to import.`)}
       />
-      <Grid columns={3} gap={7}>
+      <Grid columns={[null, 1, 1, `repeat(auto-fit, 300px)`]} gap={7}>
         {sites.map((site) => {
           console.log(site)
           const optionValue = site.hash

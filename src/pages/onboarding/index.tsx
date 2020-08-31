@@ -30,17 +30,16 @@ export default function OnboardingMainPage(): JSX.Element {
       <TabNavigation />
       <main
         sx={{
-          // px: 9,
-          // py: 7,
           overflowY: `auto`,
           maxWidth: `62rem`,
-          padding: `10rem 15% 0`,
+          px: `15%`,
+          py: `10rem`,
           fontFamily: `sans`,
         }}
       >
         <OnboardingIllustration
           sx={{
-            position: `absolute`,
+            position: `fixed`,
             right: [0, `-50%`, `-30%`, `-20%`, `0%`],
             top: [0, `-50%`, `-40%`, `-20%`, `0%`],
             zIndex: -1,

@@ -43,7 +43,7 @@ export function EditorsRadioButton({
         css={visuallyHiddenCss}
         {...getLegendProps(`Please select your preferred code editor`)}
       />
-      <Grid columns={3} gap={7}>
+      <Grid columns={[null, 1, 1, `repeat(auto-fit, 300px)`]} gap={7}>
         {editors.map((editor) => {
           const optionValue = editor
 

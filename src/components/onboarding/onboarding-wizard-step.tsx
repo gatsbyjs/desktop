@@ -60,7 +60,7 @@ export function OnboardingWizardStepActions(
     <div
       {...props}
       sx={{
-        mt: 10,
+        my: 10,
       }}
     />
   )

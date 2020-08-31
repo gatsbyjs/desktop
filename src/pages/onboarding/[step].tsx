@@ -30,7 +30,9 @@ export default function OnboardingWizard({
       <main
         sx={{
           overflowY: `auto`,
-          padding: `10rem 15% 0`,
+          px: `15%`,
+          pb: 10,
+          pt: [12, null, null, null, `10rem`],
           fontFamily: `sans`,
         }}
       >
