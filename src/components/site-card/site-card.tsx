@@ -17,6 +17,7 @@ import {
   siteDisplayStatusLabels,
 } from "../../util/site-status"
 import { visuallyHiddenCss } from "../../util/a11y"
+import { useConfig } from "../../util/use-config"
 
 interface IProps {
   site: GatsbySite
@@ -40,6 +41,8 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
 
   console.log(site.name, status)
   const displayStatus = getSiteDisplayStatus(status)
+
+  const [editor] = useConfig(`preferredEditor`)
 
   return (
     <Flex
@@ -105,7 +108,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
           </Flex>
         </Flex>
         <Flex mt="auto">
-          <EditorLauncher path={site.root} editor="code" />
+          <EditorLauncher path={site.root} editor={editor} />
         </Flex>
       </Flex>
       <button

@@ -7,7 +7,7 @@ import { editorIcons, CodeEditor } from "../../util/editors"
 
 export interface IProps {
   path: string
-  editor: CodeEditor
+  editor?: CodeEditor
 }
 
 export function EditorLauncher({ path, editor = `code` }: IProps): JSX.Element {
