@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useContext,
 } from "react"
+import { CodeEditor } from "./editors"
 
 /**
  * This module uses shared context to wrap and subscribe to electron-config
@@ -13,6 +14,9 @@ import React, {
 
 interface IConfigType {
   siteTabs: Array<string>
+  chosenSites: Array<string>
+  telemetryOptIn: boolean
+  preferredEditor: CodeEditor
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

@@ -5,19 +5,25 @@ import { Heading, Text, CheckboxFieldBlock, Button } from "gatsby-interface"
 import { OnboardingIllustration } from "../../components/onboarding/onboarding-illustration"
 import { MdArrowForward } from "react-icons/md"
 import { navigate } from "gatsby"
+import { useCallback, FormEvent } from "react"
+import { useConfig } from "../../util/use-config"
 
 export default function OnboardingMainPage(): JSX.Element {
   const onSubmit: React.FocusEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    const submitAnonUsageInfo = (e.currentTarget
-      .elements as HTMLFormControlsCollection & { anonUsage: HTMLInputElement })
-      .anonUsage.checked
-
-    // TODO do something with the checkbox value
-    console.log({ submitAnonUsageInfo })
-
     navigate(`/onboarding/editor`)
   }
+
+  const [optedIn = false, setOptedIn] = useConfig(`telemetryOptIn`)
+
+  console.log({ optedIn })
+
+  const onToggle = useCallback(
+    (e: FormEvent<HTMLInputElement>): void => {
+      setOptedIn(!e.currentTarget.checked)
+    },
+    [setOptedIn]
+  )
 
   return (
     <Grid
@@ -78,6 +84,8 @@ export default function OnboardingMainPage(): JSX.Element {
             id="anonUsage"
             name="anonUsage"
             label="Yes, submit anonymous usage information"
+            onInput={onToggle}
+            checked={optedIn}
             css={{
               // TODO remove this temp fix once this is fixed in gatsby-interface
               "input + span::before": {
