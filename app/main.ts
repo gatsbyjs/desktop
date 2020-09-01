@@ -7,6 +7,7 @@ import {
   Tray,
   Menu,
   Event,
+  shell,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -73,6 +74,11 @@ async function start(): Promise<void> {
         mainWindow.loadURL(makeUrl(`sites`))
       }
     }
+    // Intercept window.open/target=_blank from admin and open in browser
+    mainWindow.webContents.on(`new-window`, (event, url) => {
+      event.preventDefault()
+      shell.openExternal(url)
+    })
     mainWindow.show()
   }
 
