@@ -18,6 +18,7 @@ export interface IProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   required?: boolean
   error?: React.ReactNode
+  selected?: CodeEditor | ""
 }
 
 export function EditorsRadioButton({
@@ -26,6 +27,7 @@ export function EditorsRadioButton({
   onChange,
   required,
   error,
+  selected = ``,
 }: IProps): JSX.Element {
   const {
     getLegendProps,
@@ -57,6 +59,7 @@ export function EditorsRadioButton({
                   value={optionValue}
                   onChange={onChange}
                   name={name}
+                  checked={editor === selected}
                   css={{
                     // TODO remove this temp fix once this is fixed in gatsby-interface
                     "& + span::before": {

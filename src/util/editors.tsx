@@ -29,6 +29,18 @@ export type CodeEditor =
   | "emacs"
   | "visualstudio"
 
+export const ALL_EDITORS: CodeEditor[] = [
+  `code`,
+  `sublime`,
+  `atom`,
+  `webstorm`,
+  `phpstorm`,
+  `idea14ce`,
+  `vim`,
+  `emacs`,
+  `visualstudio`,
+]
+
 export const editorLabels: Record<CodeEditor, string> = {
   atom: `Atom`,
   emacs: `Emacs`,

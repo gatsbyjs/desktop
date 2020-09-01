@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
-import React from "react"
+import React, { useCallback } from "react"
 import { Button } from "gatsby-interface"
 import { MdArrowForward } from "react-icons/md"
 import {
@@ -9,6 +9,8 @@ import {
   IProps as WizardStepProps,
 } from "./onboarding-wizard-step"
 import { EditorsRadioButton } from "./editors-radio-button"
+import { ALL_EDITORS, CodeEditor } from "../../util/editors"
+import { useConfig } from "../../util/use-config"
 
 export interface IProps
   extends Pick<WizardStepProps, "currentStep" | "totalSteps"> {
@@ -20,15 +22,26 @@ export function ChooseEditor({
   totalSteps,
   onGoNext,
 }: IProps): JSX.Element {
-  const [preferredEditor, setPreferredEditor] = React.useState<string>(``)
-  const onSubmit: React.FocusEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
+  const [preferredEditor = ``, setPreferredEditor] = useConfig(
+    `preferredEditor`
+  )
+  const onSubmit: React.FocusEventHandler<HTMLFormElement> = useCallback(
+    (e) => {
+      e.preventDefault()
+      onGoNext()
+    },
+    [onGoNext]
+  )
 
-    // TODO do something with preferredEditor
-    console.log(preferredEditor)
+  console.log({ preferredEditor })
 
-    onGoNext()
-  }
+  const chooseEditor = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      console.log(`choosing editor `, event.target.value)
+      setPreferredEditor(event.target.value as CodeEditor)
+    },
+    [setPreferredEditor]
+  )
 
   return (
     <OnboardingWizardStep
@@ -40,20 +53,9 @@ export function ChooseEditor({
       <form onSubmit={onSubmit}>
         <EditorsRadioButton
           name="preferredEditor"
-          editors={[
-            `code`,
-            `sublime`,
-            `atom`,
-            `webstorm`,
-            `phpstorm`,
-            `idea14ce`,
-            `vim`,
-            `emacs`,
-            `visualstudio`,
-          ]}
-          onChange={(e): void => {
-            setPreferredEditor(e.target.value)
-          }}
+          editors={ALL_EDITORS}
+          onChange={chooseEditor}
+          selected={preferredEditor}
         />
         <OnboardingWizardStepActions>
           <Button

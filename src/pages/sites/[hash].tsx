@@ -29,7 +29,7 @@ export default function SitePage({ params }: IProps): JSX.Element {
       {running && port ? (
         <iframe
           frameBorder={0}
-          src={`http://localhost:${port}/___admin`}
+          src={`http://localhost:${port}/___admin/`}
           sx={{
             flex: 1,
           }}
