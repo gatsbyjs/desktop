@@ -1,51 +1,23 @@
 /** @jsx jsx */
-import { jsx, Flex } from "theme-ui"
-import { ReactNode, PropsWithChildren, useCallback } from "react"
-import { SettingsMenu } from "./settings-menu"
-import { DropdownMenuItem, Text } from "gatsby-interface"
-import { ipcRenderer } from "electron"
+import { jsx, Grid } from "theme-ui"
+import { TabNavigation } from "./tab-navigation"
 
 export interface IProps {
-  headerItems?: ReactNode
+  children: React.ReactNode
 }
 
-export function Layout({
-  children,
-  headerItems,
-}: PropsWithChildren<IProps>): JSX.Element {
-  const quit = useCallback((): void => ipcRenderer.send(`quit-app`), [])
-  const openMain = useCallback((): void => ipcRenderer.send(`open-main`), [])
+export function Layout({ children }: IProps): JSX.Element {
   return (
-    <div>
-      <Flex
-        sx={{
-          alignItems: `center`,
-          position: `fixed`,
-          height: `60px`,
-          backgroundColor: `primaryBackground`,
-          width: `100%`,
-          px: 6,
-          maxWidth: `100vw`,
-        }}
-      >
-        <Flex sx={{ flex: `1 1 auto` }}>
-          <img src={require(`../../assets/logo.svg`)} alt="Gatsby" />
-        </Flex>
-        <Flex>
-          {headerItems}
-          <SettingsMenu>
-            <DropdownMenuItem onSelect={quit}>
-              <Text as="span">Exit</Text>
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={openMain}>
-              <Text as="span">Open main window</Text>
-            </DropdownMenuItem>
-          </SettingsMenu>
-        </Flex>
-      </Flex>
-      <Flex mx={6} sx={{ flexDirection: `column`, paddingTop: `60px` }}>
-        {children}
-      </Flex>
-    </div>
+    <Grid
+      css={{
+        height: `100vh`,
+        width: `100vw`,
+        gridTemplateRows: `34px 1fr`,
+      }}
+      gap={0}
+    >
+      <TabNavigation />
+      {children}
+    </Grid>
   )
 }

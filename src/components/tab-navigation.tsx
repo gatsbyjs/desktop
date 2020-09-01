@@ -24,7 +24,7 @@ export function TabLink(
         fontFamily: `sans`,
         fontSize: 0,
         fontWeight: 500,
-        lineHeight: `solid`,
+        lineHeight: `default`,
         textDecoration: `none`,
         display: `flex`,
         alignItems: `center`,
@@ -67,6 +67,7 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
       sx={{
         alignItems: `center`,
         pr: 2,
+        py: 3,
         ...(isActive && {
           backgroundColor: `purple.80`,
           color: `white`,
@@ -74,7 +75,10 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
       }}
     >
       <TabLink {...props} to={url}>
-        <SiteStatusDot status={site.siteStatus.status} sx={{ mr: 2 }} />
+        <SiteStatusDot
+          status={site.siteStatus.status}
+          sx={{ mr: 2, flexShrink: 0 }}
+        />
         {site.name}
       </TabLink>
       <button
@@ -111,7 +115,6 @@ export function TabNavigation(): JSX.Element {
         WebkitAppRegion: `drag`,
         WebkitUserSelect: `none`,
         paddingLeft: 88,
-        height: `34px`,
       }}
     >
       <Link
@@ -120,7 +123,8 @@ export function TabNavigation(): JSX.Element {
         sx={{
           display: `flex`,
           alignItems: `center`,
-          px: 3,
+          py: 3,
+          px: 4,
           "&.active": {
             backgroundColor: `white`,
           },

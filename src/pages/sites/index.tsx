@@ -2,22 +2,15 @@
 import { jsx, Grid } from "theme-ui"
 import { useSiteRunners } from "../../util/site-runners"
 import { SiteCard } from "../../components/site-card/site-card"
-import { TabNavigation } from "../../components/tab-navigation"
 import { Heading, Text, LinkButton } from "gatsby-interface"
 import { MdArrowForward } from "react-icons/md"
+import { Layout } from "../../components/layout"
 
 export default function MainPage(): JSX.Element {
   const { sites } = useSiteRunners()
 
   return (
-    <Grid
-      css={{
-        height: `100vh`,
-        width: `100vw`,
-        gridTemplateRows: `32px 1fr`,
-      }}
-    >
-      <TabNavigation />
+    <Layout>
       <main
         sx={{
           px: 9,
@@ -37,7 +30,7 @@ export default function MainPage(): JSX.Element {
             ({sites.length})
           </Text>
           <LinkButton
-            to="/onboarding"
+            to="/onboarding/intro"
             size="S"
             variant="SECONDARY"
             rightIcon={<MdArrowForward />}
@@ -56,6 +49,6 @@ export default function MainPage(): JSX.Element {
           ))}
         </Grid>
       </main>
-    </Grid>
+    </Layout>
   )
 }
