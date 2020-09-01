@@ -14,6 +14,7 @@ export function Layout({
   headerItems,
 }: PropsWithChildren<IProps>): JSX.Element {
   const quit = useCallback((): void => ipcRenderer.send(`quit-app`), [])
+  const openMain = useCallback((): void => ipcRenderer.send(`open-main`), [])
   return (
     <div>
       <Flex
@@ -35,6 +36,9 @@ export function Layout({
           <SettingsMenu>
             <DropdownMenuItem onSelect={quit}>
               <Text as="span">Exit</Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={openMain}>
+              <Text as="span">Open main window</Text>
             </DropdownMenuItem>
           </SettingsMenu>
         </Flex>

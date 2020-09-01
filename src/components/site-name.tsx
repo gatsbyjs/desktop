@@ -13,11 +13,11 @@ export interface IProps {
 function getColorForStatus(status: Status, theme: Record<string, any>): string {
   switch (status) {
     case GlobalStatus.Success:
-    case WorkerStatus.runningInBackground:
+    case WorkerStatus.RunningInBackground:
       return theme.tones.SUCCESS.dark
 
     case GlobalStatus.NotStarted:
-    case WorkerStatus.stopped:
+    case WorkerStatus.Stopped:
       return theme.tones.NEUTRAL.dark
 
     case GlobalStatus.InProgress:
@@ -35,11 +35,11 @@ function getColorForStatus(status: Status, theme: Record<string, any>): string {
 function StatusIcon({ status }: { status: Status }): JSX.Element {
   switch (status) {
     case GlobalStatus.Success:
-    case WorkerStatus.runningInBackground:
+    case WorkerStatus.RunningInBackground:
       return <MdPlayArrow size={16} />
 
     case GlobalStatus.NotStarted:
-    case WorkerStatus.stopped:
+    case WorkerStatus.Stopped:
       return <MdStop size={16} />
 
     case GlobalStatus.InProgress:

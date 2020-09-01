@@ -22,14 +22,12 @@ This is alpha software, is under active development, and is likely to be broken.
 
 ## Architecture
 
-Gatsby Desktop is an Electron app, which is currently just displayed in the menubar or tray. All Electron apps have two primary processes:
+Gatsby Desktop is an Electron app. All Electron apps have two primary processes:
 
 1. "main", which is a Node.js script which handles windowing, menus and similar native bits. Think of it as the server. It opens `BrowserWindow`s which contain:
 2. "renderer": this is the UI of the app, which is HTML + JS. In Gatsby Desktop, this is of course a local Gatsby site. Unlike a regular web app, Electron renderers can import and use built-in Node.js modules, such as `fs` and `child_process`.
 
-Gatsby Desktop can launch and run your local Gatsby sites. To do this we use another process:
-
-3. The "worker". This is a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers). One of these is spawned by the renderer for each Gatsby site launched be the app. These workers then spawn the actual Node `ChildProcess` that runs the site. As well as invoking `gatsby develop` for the site, the worker also takes care of logging and killing and restarting the process as needed. When it is running, it opens an IPC channel to the child process, through which it receives structured logs. It then forwards these logs to the renderer using `postMessage`.
+Gatsby Desktop can launch and run your local Gatsby sites. We spawn these in the main process, which maintains a list of running site. The renderer gets this list over IPC and stores it in React context. There are React hooks to make it easy to access the list of sites and whether or not they're running. The main process also auto-discovers any local Gatsby sites and watches these for changes.
 
 ## Development
 

@@ -1,10 +1,11 @@
 /** @jsx jsx */
 import { jsx, ThemeProvider, merge, Theme } from "theme-ui"
 import { getTheme } from "gatsby-interface"
-import { RunnerProvider } from "./site-runners"
+import { RunnerProvider } from "../util/site-runners"
 import { ReactNode } from "react"
 import "typeface-inter"
 import "typeface-roboto-mono"
+import { ConfigProvider } from "../util/use-config"
 
 const baseTheme = getTheme()
 
@@ -31,8 +32,10 @@ const theme = merge((baseTheme as unknown) as Theme, {
 
 export function Providers({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <RunnerProvider>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </RunnerProvider>
+    <ConfigProvider>
+      <RunnerProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      </RunnerProvider>
+    </ConfigProvider>
   )
 }

@@ -15,6 +15,7 @@ export interface ISiteMetadata {
   name?: string
   pid?: number
   lastRun?: number
+  hash?: string
 }
 
 export interface IServiceInfo {
@@ -143,6 +144,12 @@ export async function watchSites(
       if (!json.name) {
         json.name = packageJson.name
       }
+
+      if (!json.hash) {
+        const [hash] = metadataPath.split(`/`)
+        json.hash = hash
+      }
+
       siteWatcher.add(sitePkgJsonPath)
     } catch (e) {
       console.log(`Couldn't load site`, e, sitePkgJsonPath)
@@ -156,11 +163,21 @@ export async function watchSites(
 
   async function metadataChanged(path: string): Promise<void> {
     const json = await getSiteInfo(path)
+    if (json.name === `gatsby-desktop`) {
+      return
+    }
     console.log(`changed`, json)
     const oldJson = JSON.stringify(sites.get(path) || {})
     if (JSON.stringify(oldJson) === JSON.stringify(json)) {
       return
     }
+
+    if (!json.hash) {
+      // The hash is the folder name of the changed file, so grab that
+      const [hash] = path.split(`/`)
+      json.hash = hash
+    }
+
     sites.set(path, json)
     update(sites)
   }
