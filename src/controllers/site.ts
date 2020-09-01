@@ -158,11 +158,11 @@ export class GatsbySite {
       }
 
       if (STOPPED_STATES.includes(this.siteStatus.status)) {
-        newStatus.status = WorkerStatus.runningInBackground
+        newStatus.status = WorkerStatus.RunningInBackground
       }
       this.updateStatus(newStatus)
     } else {
-      if (this.siteStatus.status === WorkerStatus.runningInBackground) {
+      if (this.siteStatus.status === WorkerStatus.RunningInBackground) {
         this.updateStatus({ status: GlobalStatus.NotStarted, running: false })
       } else if (this.siteStatus.status === GlobalStatus.NotStarted) {
         this.updateStatus({ running: false })
@@ -212,7 +212,7 @@ export class GatsbySite {
 
   public stop(): void {
     ipcRenderer.send(`stop-site`, { hash: this.hash, pid: this.siteStatus.pid })
-    this.updateStatus({ status: WorkerStatus.stopped, running: false })
+    this.updateStatus({ status: WorkerStatus.Stopped, running: false })
   }
 
   logMessage(message: string): void {

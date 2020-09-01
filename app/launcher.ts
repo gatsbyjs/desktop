@@ -1,6 +1,5 @@
 /* eslint-disable no-invalid-this */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { IProgram } from "gatsby/internal"
 import { readJSON } from "fs-extra"
 import {
   fork,
@@ -10,7 +9,6 @@ import {
 import type { PackageJson } from "gatsby"
 import path from "path"
 import detectPort from "detect-port"
-import fixPath from "fix-path"
 import {
   LogObject,
   StructuredEventType,
@@ -19,8 +17,6 @@ import {
   IPCMessageType,
   IPCMessage,
 } from "./ipc-types"
-
-fixPath()
 
 // Gatsby package type is missing these
 type PackageJsonWithBin = PackageJson & { bin: { gatsby: string } }

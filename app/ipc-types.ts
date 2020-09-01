@@ -3,8 +3,8 @@
 /* eslint-disable quotes */
 
 export enum WorkerStatus {
-  runningInBackground = `RUNNING_IN_BACKGROUND`,
-  stopped = `STOPPED`,
+  RunningInBackground = `RUNNING_IN_BACKGROUND`,
+  Stopped = `STOPPED`,
 }
 
 export type Status = GlobalStatus | WorkerStatus

@@ -173,6 +173,7 @@ export async function watchSites(
     }
 
     if (!json.hash) {
+      // The hash is the folder name of the changed file, so grab that
       const [hash] = path.split(`/`)
       json.hash = hash
     }
