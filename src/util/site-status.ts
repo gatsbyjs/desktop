@@ -15,7 +15,7 @@ export function getSiteDisplayStatus(status: Status): SiteDisplayStatus {
     case GlobalStatus.InProgress:
       return SiteDisplayStatus.Starting
     case GlobalStatus.Success:
-    case WorkerStatus.runningInBackground:
+    case WorkerStatus.RunningInBackground:
       return SiteDisplayStatus.Running
     case GlobalStatus.Failed:
     case GlobalStatus.Interrupted:
@@ -39,7 +39,7 @@ export function isErrored(status: Status): boolean {
 export function isRunning(status: Status): boolean {
   return (
     status === GlobalStatus.Success ||
-    status === WorkerStatus.runningInBackground
+    status === WorkerStatus.RunningInBackground
   )
 }
 

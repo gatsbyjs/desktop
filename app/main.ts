@@ -12,6 +12,8 @@ import {
 import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
+import fixPath from "fix-path"
+
 import {
   hasGatsbyInstalled,
   loadPackageJson,
@@ -44,6 +46,7 @@ function makeWindow(): BrowserWindow {
 }
 
 async function start(): Promise<void> {
+  fixPath()
   /**
    * Start a static server to serve the app's resources.
    * Gatsby doesn't like being served from a file URL
@@ -185,9 +188,10 @@ async function start(): Promise<void> {
         return
       }
       if (pid) {
+        process.kill(pid)
+      } else {
         console.error(`Site not found`)
       }
-      process.kill(pid)
     }
   )
 
