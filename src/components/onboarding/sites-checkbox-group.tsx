@@ -8,9 +8,9 @@ import {
   FormError,
   StyledCheckbox,
 } from "gatsby-interface"
-import { MdFolderOpen } from "react-icons/md"
+import { MdFolderOpen, MdArrowForward } from "react-icons/md"
 import { visuallyHiddenCss } from "../../util/a11y"
-import { GroupInputCard } from "./group-input-card"
+import { GroupInputCard, GroupButtonCard } from "./group-input-card"
 
 export interface IProps {
   name: string
@@ -18,6 +18,7 @@ export interface IProps {
   required?: boolean
   error?: React.ReactNode
   hiddenSites: Array<string>
+  browseSites: () => void
 }
 
 export function SiteCheckboxGroup({
@@ -26,6 +27,7 @@ export function SiteCheckboxGroup({
   required,
   error,
   hiddenSites = [],
+  browseSites,
 }: IProps): JSX.Element {
   const {
     getLegendProps,
@@ -95,6 +97,9 @@ export function SiteCheckboxGroup({
             </GroupInputCard>
           )
         })}
+        <GroupButtonCard icon={<MdArrowForward />} onClick={browseSites}>
+          Add another site
+        </GroupButtonCard>
       </Grid>
       <FormError {...errorProps} />
     </FormFieldset>

@@ -54,3 +54,52 @@ export function GroupInputCard({
     </label>
   )
 }
+
+export interface IButtonProps extends React.ComponentPropsWithoutRef<"button"> {
+  icon: React.ReactNode
+}
+
+export function GroupButtonCard({
+  children,
+  icon,
+  ...rest
+}: IButtonProps): JSX.Element {
+  return (
+    <button
+      css={cardCss}
+      sx={{
+        display: `flex`,
+        alignItems: `center`,
+        cursor: `pointer`,
+        p: 5,
+      }}
+      type="button"
+      {...rest}
+    >
+      <div
+        sx={{
+          minWidth: 0, // needed for text truncation to work properly
+          paddingRight: 5,
+        }}
+      >
+        <div
+          sx={{
+            fontFamily: `body`,
+            fontWeight: `semiBold`,
+            color: `grey.80`,
+            fontSize: 1,
+            lineHeight: `solid`,
+            textOverflow: `ellipsis`,
+            whiteSpace: `nowrap`,
+            overflow: `hidden`,
+          }}
+        >
+          {children}
+        </div>
+      </div>
+      <Flex ml="auto" sx={{ fontSize: 5, color: `gatsby` }}>
+        {icon}
+      </Flex>
+    </button>
+  )
+}

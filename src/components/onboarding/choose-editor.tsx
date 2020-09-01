@@ -48,7 +48,7 @@ export function ChooseEditor({
       currentStep={currentStep}
       totalSteps={totalSteps}
       title="Please select your preferred code editor"
-      subtitle="You can always change this preference later."
+      subtitle="Select your installed code editor; you can always change this preference later."
     >
       <form onSubmit={onSubmit}>
         <EditorsRadioButton
@@ -63,7 +63,7 @@ export function ChooseEditor({
             rightIcon={<MdArrowForward />}
             disabled={!preferredEditor}
           >
-            Import sites
+            Continue
           </Button>
         </OnboardingWizardStepActions>
       </form>

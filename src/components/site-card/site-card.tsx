@@ -157,15 +157,7 @@ const statusStartingCss: ThemeCss = (theme) => [
 
 const statusSuccessCss: ThemeCss = (theme) => [
   {
-    background: `repeating-linear-gradient(
-      -30deg,
-      ${theme.colors.green[40]},
-      ${theme.colors.green[40]} 4px,
-      ${theme.colors.green[60]} 4px,
-      ${theme.colors.green[60]} 8px
-    )`,
-    backgroundSize: `200% 200%`,
-    animation: `${statusAnimation} 10s infinite linear forwards`,
+    background: theme.colors.green[40],
   },
 ]
 

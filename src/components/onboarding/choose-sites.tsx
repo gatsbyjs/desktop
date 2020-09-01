@@ -2,7 +2,7 @@
 import { jsx } from "theme-ui"
 import React from "react"
 import { useSiteRunners, useHiddenSites } from "../../util/site-runners"
-import { Button, EmptyState } from "gatsby-interface"
+import { Button, EmptyState, EmptyStatePrimaryAction } from "gatsby-interface"
 import { SiteCheckboxGroup } from "./sites-checkbox-group"
 import { MdArrowForward } from "react-icons/md"
 import {
@@ -10,7 +10,7 @@ import {
   OnboardingWizardStepActions,
   IProps as WizardStepProps,
 } from "./onboarding-wizard-step"
-import { SiteBrowser } from "../site-browser"
+import { useSiteBrowser } from "../site-browser"
 import { ISiteInfo } from "../../controllers/site"
 
 export interface IProps
@@ -56,6 +56,8 @@ export function ChooseSites({
     onGoNext()
   }
 
+  const [browseSites, errorModal] = useSiteBrowser(onAddSite)
+
   const noSites = sites.length === 0
 
   return (
@@ -86,15 +88,9 @@ export function ChooseSites({
                 </React.Fragment>
               }
               primaryAction={
-                <SiteBrowser
-                  type="button"
-                  variant={noSites ? `PRIMARY` : `SECONDARY`}
-                  size="L"
-                  sx={{ mr: 5 }}
-                  onSelectSite={onAddSite}
-                >
+                <EmptyStatePrimaryAction type="button" onClick={browseSites}>
                   Add a site
-                </SiteBrowser>
+                </EmptyStatePrimaryAction>
               }
             />
           </div>
@@ -103,25 +99,18 @@ export function ChooseSites({
             name="sitesToImport"
             sites={sites}
             hiddenSites={hiddenSites}
+            browseSites={browseSites}
           />
         )}
         {!noSites && (
           <OnboardingWizardStepActions>
-            <SiteBrowser
-              type="button"
-              variant={noSites ? `PRIMARY` : `SECONDARY`}
-              size="L"
-              sx={{ mr: 5 }}
-              onSelectSite={onAddSite}
-            >
-              Add a site
-            </SiteBrowser>
             <Button type="submit" rightIcon={<MdArrowForward />}>
               Start using Gatsby Desktop
             </Button>
           </OnboardingWizardStepActions>
         )}
       </form>
+      {errorModal}
     </OnboardingWizardStep>
   )
 }

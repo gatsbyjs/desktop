@@ -3,7 +3,6 @@ import { ipcRenderer } from "electron"
 import { ISiteInfo, ISiteError, SiteError } from "../controllers/site"
 import {
   Button,
-  ButtonProps,
   Text,
   Modal,
   ModalCard,
@@ -13,16 +12,10 @@ import {
   StyledModalActions,
 } from "gatsby-interface"
 
-interface IProps extends ButtonProps {
-  onSelectSite?: (siteInfo: ISiteInfo) => void
+export function useSiteBrowser(
+  onSelectSite?: (siteInfo: ISiteInfo) => void,
   onSiteError?: (error: ISiteError) => void
-}
-
-export function SiteBrowser({
-  onSelectSite,
-  onSiteError,
-  ...props
-}: IProps): JSX.Element {
+): readonly [() => void, JSX.Element] {
   const [siteError, setSiteError] = React.useState<ISiteError | null>(null)
 
   const closeErrorModal = (): void => setSiteError(null)
@@ -46,21 +39,19 @@ export function SiteBrowser({
     onSelectSite?.(result)
   }, [onSelectSite])
 
-  return (
-    <React.Fragment>
-      <Button size="S" textVariant="BRAND" onClick={browse} {...props} />
-
-      <Modal
-        aria-label="Failed to add a site"
-        isOpen={Boolean(siteError)}
-        onDismiss={closeErrorModal}
-      >
-        <ModalCard>
-          <SiteErrorModal siteError={siteError} onDismiss={closeErrorModal} />
-        </ModalCard>
-      </Modal>
-    </React.Fragment>
+  const errorModal = (
+    <Modal
+      aria-label="Failed to add a site"
+      isOpen={Boolean(siteError)}
+      onDismiss={closeErrorModal}
+    >
+      <ModalCard>
+        <SiteErrorModal siteError={siteError} onDismiss={closeErrorModal} />
+      </ModalCard>
+    </Modal>
   )
+
+  return [browse, errorModal]
 }
 
 function SiteErrorModal({
