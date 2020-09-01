@@ -14,7 +14,7 @@ import { CodeEditor } from "./editors"
 
 interface IConfigType {
   siteTabs: Array<string>
-  chosenSites: Array<string>
+  hiddenSites: Array<string>
   telemetryOptIn: boolean
   preferredEditor: CodeEditor
 }

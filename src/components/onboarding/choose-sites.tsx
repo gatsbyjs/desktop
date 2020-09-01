@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
 import React from "react"
-import { useSiteRunners } from "../../util/site-runners"
+import { useSiteRunners, useHiddenSites } from "../../util/site-runners"
 import { Button, EmptyState } from "gatsby-interface"
 import { SiteCheckboxGroup } from "./sites-checkbox-group"
 import { MdArrowForward } from "react-icons/md"
@@ -27,30 +27,32 @@ export function ChooseSites({
   const [hasAddedFirstSite, setHasAddedFirstSite] = React.useState<boolean>(
     false
   )
+  const { hiddenSites, setHiddenSites, unhideSite } = useHiddenSites()
 
   const onAddSite = (siteInfo: ISiteInfo): void => {
-    addSite?.(siteInfo)
+    const site = addSite?.(siteInfo)
+    if (!site) {
+      return
+    }
+    // If we've previously hidden it, then unhide it
+    unhideSite(site.hash)
     setHasAddedFirstSite(true)
   }
 
   const onSubmit: React.FocusEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    console.log(e.currentTarget.elements)
-
     const siteCheckboxes = e.currentTarget.elements.namedItem(
       `sitesToImport`
     ) as RadioNodeList
-
-    const selectedSites = []
+    // Because we use always use the auto-discovered list as the source of truth, rather than choosing sites,
+    // we actually hiden the unchecked sites
+    const hidden = []
     for (const checkbox of siteCheckboxes) {
-      if ((checkbox as HTMLInputElement).checked) {
-        selectedSites.push((checkbox as HTMLInputElement).value)
+      if (!(checkbox as HTMLInputElement).checked) {
+        hidden.push((checkbox as HTMLInputElement).value)
       }
     }
-
-    // TODO do something with selectedSites
-    console.log(selectedSites)
-
+    setHiddenSites(hidden)
     onGoNext()
   }
 
@@ -97,7 +99,11 @@ export function ChooseSites({
             />
           </div>
         ) : (
-          <SiteCheckboxGroup name="sitesToImport" sites={sites} />
+          <SiteCheckboxGroup
+            name="sitesToImport"
+            sites={sites}
+            hiddenSites={hiddenSites}
+          />
         )}
         {!noSites && (
           <OnboardingWizardStepActions>

@@ -20,7 +20,7 @@ export default function OnboardingMainPage(): JSX.Element {
 
   const onToggle = useCallback(
     (e: FormEvent<HTMLInputElement>): void => {
-      setOptedIn(!e.currentTarget.checked)
+      setOptedIn(e.currentTarget.checked)
     },
     [setOptedIn]
   )
@@ -84,7 +84,7 @@ export default function OnboardingMainPage(): JSX.Element {
             id="anonUsage"
             name="anonUsage"
             label="Yes, submit anonymous usage information"
-            onInput={onToggle}
+            onChange={onToggle}
             checked={optedIn}
             css={{
               // TODO remove this temp fix once this is fixed in gatsby-interface

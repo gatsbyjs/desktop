@@ -17,6 +17,7 @@ export interface IProps {
   sites: GatsbySite[]
   required?: boolean
   error?: React.ReactNode
+  hiddenSites: Array<string>
 }
 
 export function SiteCheckboxGroup({
@@ -24,6 +25,7 @@ export function SiteCheckboxGroup({
   sites,
   required,
   error,
+  hiddenSites = [],
 }: IProps): JSX.Element {
   const {
     getLegendProps,
@@ -43,18 +45,19 @@ export function SiteCheckboxGroup({
       />
       <Grid columns={[null, 1, 1, `repeat(auto-fit, 300px)`]} gap={7}>
         {sites.map((site) => {
-          console.log(site)
           const optionValue = site.hash
-
+          const hidden = hiddenSites.includes(optionValue)
           return (
             <GroupInputCard
-              key={optionValue}
+              // We need this because we do an initial render before the config comes through
+              // and if the key is the same it won't re-render the checkbox with the new default
+              key={`${optionValue}${hidden}`}
               {...getOptionLabelProps(optionValue)}
               input={
                 <StyledCheckbox
                   {...getOptionControlProps(optionValue)}
                   value={optionValue}
-                  defaultChecked
+                  defaultChecked={!hidden}
                   name={name}
                   css={{
                     // TODO remove this temp fix once this is fixed in gatsby-interface
