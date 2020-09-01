@@ -23,7 +23,7 @@ interface IProps {
 }
 
 function canBeKilled(status: Status, pid?: number): boolean {
-  return status !== WorkerStatus.runningInBackground || !!pid
+  return status !== WorkerStatus.RunningInBackground || !!pid
 }
 
 /**
