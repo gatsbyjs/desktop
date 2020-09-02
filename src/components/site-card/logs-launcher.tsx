@@ -26,7 +26,7 @@ export function LogsLauncher({ logs, status }: IProps): JSX.Element {
         View logs
       </GhostButton>
       <Modal aria-label="Logs" isOpen={isOpen} onDismiss={toggleLogs}>
-        <ModalPanel>
+        <ModalPanel maxWidth="80%">
           <LogsViewer logs={logs} onDismiss={toggleLogs} />
         </ModalPanel>
       </Modal>
