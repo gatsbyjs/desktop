@@ -31,7 +31,9 @@ function canBeKilled(status: Status, pid?: number): boolean {
  * The item in the list of sites
  */
 export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { status, running, port, pid, rawLogs } = useSiteRunnerStatus(site)
+  const { status, running, port, pid, rawLogs, logs } = useSiteRunnerStatus(
+    site
+  )
 
   const { addTab } = useSiteTabs()
 
@@ -86,6 +88,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
             </div>
             {!!rawLogs?.length && (
               <LogsLauncher
+                structuredLogs={logs}
                 logs={rawLogs}
                 status={status}
                 siteName={site.name}

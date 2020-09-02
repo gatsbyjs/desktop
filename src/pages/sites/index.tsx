@@ -49,7 +49,7 @@ export default function MainPage(): JSX.Element {
         <Grid
           gap={8}
           marginTop={7}
-          columns="repeat(auto-fit, minmax(480px, 1fr))"
+          columns="repeat(auto-fit, minmax(456px, 1fr))"
         >
           {filteredSites.map((site) => (
             <SiteCard key={site.hash} site={site} />
