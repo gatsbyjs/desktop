@@ -2,23 +2,35 @@
 
 A proof-of-concept desktop app for managing your Gatsby sites.
 
-<p align="center">
-<img alt="Gatsby Desktop" src="assets/screenshot.png" />
-</p>
+- [Installation](#installation)
+  - [Installing built packages](#installing-built-packages)
+  - [Installing from source](#installing-from-source)
+- [Screenshots](#screenshots)
+- [Architecture](#architecture)
+- [Development](#development)
+  - [Release process](#release-process)
 
-## Warning
+## Installation
 
-This is alpha software, is under active development, and is likely to be broken. Use at your own risk.
+:warning: Warning: This is alpha software and is under active development. Use at your own risk.
 
-### To install built packages:
+### Installing built packages
 
 1. Click on [releases](https://github.com/gatsbyjs/desktop/releases) and choose the installer for your platform. Mac users will need to right-click (or ctrl-click) on the app when you first launch it, until we have code signing set up. Windows users will need to agree to lots of Defender warnings.
 
-### To install from source:
+### Installing from source
 
 1. Clone the repo
 2. Run `yarn`
 3. `yarn develop`
+
+## Screenshots
+
+<p align="center">
+<img alt="Gatsby Desktop" src="assets/screenshot.png" />
+<img alt="Gatsby Admin" src="assets/screenshot2.png" />
+<img alt="Logs" src="assets/screenshot3.png" />
+</p>
 
 ## Architecture
 
