@@ -35,6 +35,9 @@ function makeWindow(): BrowserWindow {
   return new BrowserWindow({
     title: `Gatsby Desktop`,
     titleBarStyle: `hidden`,
+    width: 1024,
+    height: 768,
+    backgroundColor: `#452475`, // purple.80
     fullscreenable: false,
     show: !process.env.GATSBY_DEVELOP_URL,
     trafficLightPosition: { x: 8, y: 18 },
@@ -57,7 +60,7 @@ async function start(): Promise<void> {
     .use(serveStatic(path.resolve(dir, `public`)))
     .listen(port)
 
-  const makeUrl = (path: string): string =>
+  const makeUrl = (path: string = ``): string =>
     process.env.GATSBY_DEVELOP_URL
       ? `${process.env.GATSBY_DEVELOP_URL}/${path}`
       : `http://localhost:${port}/${path}`
@@ -71,10 +74,10 @@ async function start(): Promise<void> {
   function openMainWindow(): void {
     if (!mainWindow || mainWindow.isDestroyed()) {
       mainWindow = makeWindow()
-      mainWindow.loadURL(makeUrl(`sites`))
+      mainWindow.loadURL(makeUrl())
     } else {
       if (!mainWindow.webContents.getURL()) {
-        mainWindow.loadURL(makeUrl(`sites`))
+        mainWindow.loadURL(makeUrl())
       }
     }
     // Intercept window.open/target=_blank from admin and open in browser
@@ -138,16 +141,16 @@ async function start(): Promise<void> {
     // If we're not running develop we can preload the start page
 
     if (!process.env.GATSBY_DEVELOP_URL) {
-      mainWindow.loadURL(makeUrl(`sites`))
+      mainWindow.loadURL(makeUrl())
       mainWindow.show()
     }
   })
-
+  // The `payload` can be a site id, which means the window will be opened with that site's admin page
   ipcMain.on(`open-main`, async (event, payload?: string) => {
     if (!mainWindow || mainWindow.isDestroyed()) {
       mainWindow = makeWindow()
     }
-    const url = makeUrl(payload ? `sites/${payload}` : `sites`)
+    const url = makeUrl(payload ? `sites/${payload}` : ``)
     if (mainWindow.webContents.getURL() !== url) {
       mainWindow.loadURL(url)
     }

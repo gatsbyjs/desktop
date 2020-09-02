@@ -1,0 +1,33 @@
+name: Lint
+
+on: push
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Install Node.js dependencies
+        run: yarn
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          # Enable linters
+          eslint: true
+          eslint_extensions: "js,jsx,ts,tsx"
+          prettier: true
+          prettier_extensions: "css,html,json,md,sass,scss,vue,yaml,yml"
+          auto_fix: true
+          git_name: gatsbybot
+          git_email: mathews.kyle+gatsbybot@gmail.com

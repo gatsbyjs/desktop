@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Grid, Flex } from "theme-ui"
+import { jsx, Grid } from "theme-ui"
 import { GatsbySite } from "../../controllers/site"
 import {
   useAriaFormGroupField,
@@ -8,9 +8,10 @@ import {
   FormError,
   StyledCheckbox,
 } from "gatsby-interface"
-import { MdFolderOpen, MdArrowForward } from "react-icons/md"
+import { MdArrowForward } from "react-icons/md"
 import { visuallyHiddenCss } from "../../util/a11y"
 import { GroupInputCard, GroupButtonCard } from "./group-input-card"
+import { FolderName } from "../folder-name"
 
 export interface IProps {
   name: string
@@ -72,28 +73,7 @@ export function SiteCheckboxGroup({
               sx={{ pl: 7 }}
             >
               {site.name}
-              <Flex
-                marginTop="2"
-                sx={{
-                  alignItems: `center`,
-                  fontWeight: `body`,
-                  color: `grey.60`,
-                  fontSize: 0,
-                  lineHeight: `default`,
-                }}
-              >
-                <MdFolderOpen sx={{ marginRight: 2, flexShrink: 0 }} />
-                <span
-                  sx={{
-                    minWidth: 0, // needed for text truncation to work properly
-                    textOverflow: `ellipsis`,
-                    whiteSpace: `nowrap`,
-                    overflow: `hidden`,
-                  }}
-                >
-                  {site.root.split(`/`).pop()}
-                </span>
-              </Flex>
+              <FolderName sitePath={site.root} />
             </GroupInputCard>
           )
         })}

@@ -7,6 +7,7 @@ import React, {
   useContext,
 } from "react"
 import { CodeEditor } from "./editors"
+import ElectronStore from "electron-store"
 
 /**
  * This module uses shared context to wrap and subscribe to electron-config
@@ -17,6 +18,7 @@ interface IConfigType {
   hiddenSites: Array<string>
   telemetryOptIn: boolean
   preferredEditor: CodeEditor
+  hasRunOnboarding: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -44,10 +46,15 @@ export function ConfigProvider({
 
 export function useConfig<K extends keyof IConfigType>(
   key: K
-): [IConfigType[K] | undefined, (val: IConfigType[K]) => void] {
+): [
+  IConfigType[K] | undefined,
+  (val: IConfigType[K]) => void,
+  ElectronStore<IConfigType> | undefined
+] {
   const store = useContext(ConfigContext)
-
-  const [value, setValue] = useState<IConfigType[K] | undefined>()
+  const [value, setValue] = useState<IConfigType[K] | undefined>(
+    store?.get(key)
+  )
 
   const setter = (val: IConfigType[K]): void => {
     setValue(val)
@@ -58,12 +65,14 @@ export function useConfig<K extends keyof IConfigType>(
     if (!store) {
       return undefined
     }
-    setValue(store.get(key))
-    const unsubscribe = store.onDidChange(key, (val) => {
+    const val = store.get(key)
+    if (val !== value) {
+      setValue(val)
+    }
+    return store.onDidChange(key, (val) => {
       setValue(val)
     })
-    return unsubscribe
   }, [key, setValue, store])
 
-  return [value, setter]
+  return [value, setter, store]
 }
