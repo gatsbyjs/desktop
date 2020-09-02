@@ -50,6 +50,8 @@ function makeWindow(): BrowserWindow {
   })
 }
 
+// We define tray in the top level scope to avoid it getting GC'd
+
 let tray: Tray
 
 async function start(): Promise<void> {
@@ -95,64 +97,7 @@ async function start(): Promise<void> {
     mainWindow.show()
   }
 
-  let tray: Tray | undefined
-
-  app.on(`ready`, () => {
-    autoUpdater.checkForUpdatesAndNotify()
-    mainWindow = makeWindow()
-
-    tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: `Show Gatsby Desktop`,
-        click: openMainWindow,
-      },
-      {
-        label: `Quit...`,
-        click: async (): Promise<void> => {
-          openMainWindow()
-          const { response } = await dialog.showMessageBox({
-            message: `Quit Gatsby Desktop?`,
-            detail: `This will stop all running sites`,
-            buttons: [`Cancel`, `Quit`],
-            defaultId: 1,
-            type: `question`,
-          })
-
-          if (response === 1) {
-            app.quit()
-          }
-        },
-      },
-    ])
-    tray.setContextMenu(contextMenu)
-
-    watchSites((sites) => {
-      siteList = sites.map((site) => {
-        const launcher = site.hash && siteLaunchers.get(site.hash)
-        if (!launcher) {
-          return {
-            site,
-          }
-        }
-        const { logs, rawLogs, status } = launcher
-        return {
-          site,
-          status: { startedInDesktop: true, logs, rawLogs, status },
-        }
-      })
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow?.webContents?.send(`sites-updated`, siteList)
-      }
-    })
-
-    // If we're not running develop we can preload the start page
-
-    if (!process.env.GATSBY_DEVELOP_URL) {
-      mainWindow.loadURL(makeUrl(`sites`))
-      mainWindow.show()
-    }
-  })
+  // Start setting up listeners
 
   // The `payload` can be a site id, which means the window will be opened with that site's admin page
   ipcMain.on(`open-main`, async (event, payload?: string) => {
@@ -273,6 +218,8 @@ async function start(): Promise<void> {
   // Wait til the app is ready
 
   await app.whenReady()
+
+  autoUpdater.checkForUpdatesAndNotify()
 
   mainWindow = makeWindow()
 
