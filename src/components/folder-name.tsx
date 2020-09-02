@@ -1,6 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "theme-ui"
-import { Text } from "gatsby-interface"
+import { jsx, Flex } from "theme-ui"
 import { MdFolderOpen } from "react-icons/md"
 import path from "path"
 
@@ -11,22 +10,30 @@ export interface IProps {
 export function FolderName({ sitePath }: IProps): JSX.Element {
   const folder = path.basename(sitePath)
   return (
-    <Text
-      as="span"
+    <Flex
+      marginTop="2"
       sx={{
-        py: 2,
-        px: 1,
-        fontFamily: `sans`,
-        fontSize: 0,
-        lineHeight: `12px`,
-        color: `grey.60`,
-        display: `flex`,
         alignItems: `center`,
+        fontWeight: `body`,
+        color: `grey.60`,
+        fontSize: 0,
+        lineHeight: `default`,
       }}
     >
-      <MdFolderOpen size={12} aria-label="Folder:" />
-      {` `}
-      <span sx={{ paddingLeft: 2 }}>{folder}</span>
-    </Text>
+      <MdFolderOpen
+        sx={{ marginRight: 2, flexShrink: 0 }}
+        aria-label="Folder:"
+      />
+      <span
+        sx={{
+          minWidth: 0, // needed for text truncation to work properly
+          textOverflow: `ellipsis`,
+          whiteSpace: `nowrap`,
+          overflow: `hidden`,
+        }}
+      >
+        {folder}
+      </span>
+    </Flex>
   )
 }
