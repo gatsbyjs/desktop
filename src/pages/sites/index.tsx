@@ -4,7 +4,7 @@ import { useSiteRunners } from "../../util/site-runners"
 import { SiteCard } from "../../components/site-card/site-card"
 import { Heading, Text, LinkButton } from "gatsby-interface"
 import { MdArrowForward } from "react-icons/md"
-import { Layout } from "../../components/layout"
+import { Layout } from "../../components/layout";
 
 export default function MainPage(): JSX.Element {
   const { sites } = useSiteRunners()
@@ -14,8 +14,8 @@ export default function MainPage(): JSX.Element {
       <main
         sx={{
           px: 9,
-          py: 7,
-          overflowY: `auto`,
+           py: 7,
+          overflowY: "auto",
         }}
       >
         <Heading
