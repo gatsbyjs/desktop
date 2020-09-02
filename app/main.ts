@@ -13,7 +13,7 @@ import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
 import fixPath from "fix-path"
-
+import { autoUpdater } from "electron-updater"
 import {
   hasGatsbyInstalled,
   loadPackageJson,
@@ -22,6 +22,7 @@ import {
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
+import log from "electron-log"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -52,6 +53,9 @@ function makeWindow(): BrowserWindow {
 let tray: Tray
 
 async function start(): Promise<void> {
+  log.transports.file.level = `info`
+  autoUpdater.logger = log
+  log.info(`App starting...`)
   fixPath()
   /**
    * Start a static server to serve the app's resources.
@@ -91,7 +95,64 @@ async function start(): Promise<void> {
     mainWindow.show()
   }
 
-  // Start setting up listeners
+  let tray: Tray | undefined
+
+  app.on(`ready`, () => {
+    autoUpdater.checkForUpdatesAndNotify()
+    mainWindow = makeWindow()
+
+    tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: `Show Gatsby Desktop`,
+        click: openMainWindow,
+      },
+      {
+        label: `Quit...`,
+        click: async (): Promise<void> => {
+          openMainWindow()
+          const { response } = await dialog.showMessageBox({
+            message: `Quit Gatsby Desktop?`,
+            detail: `This will stop all running sites`,
+            buttons: [`Cancel`, `Quit`],
+            defaultId: 1,
+            type: `question`,
+          })
+
+          if (response === 1) {
+            app.quit()
+          }
+        },
+      },
+    ])
+    tray.setContextMenu(contextMenu)
+
+    watchSites((sites) => {
+      siteList = sites.map((site) => {
+        const launcher = site.hash && siteLaunchers.get(site.hash)
+        if (!launcher) {
+          return {
+            site,
+          }
+        }
+        const { logs, rawLogs, status } = launcher
+        return {
+          site,
+          status: { startedInDesktop: true, logs, rawLogs, status },
+        }
+      })
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow?.webContents?.send(`sites-updated`, siteList)
+      }
+    })
+
+    // If we're not running develop we can preload the start page
+
+    if (!process.env.GATSBY_DEVELOP_URL) {
+      mainWindow.loadURL(makeUrl(`sites`))
+      mainWindow.show()
+    }
+  })
 
   // The `payload` can be a site id, which means the window will be opened with that site's admin page
   ipcMain.on(`open-main`, async (event, payload?: string) => {
