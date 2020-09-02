@@ -35,6 +35,8 @@ function makeWindow(): BrowserWindow {
   return new BrowserWindow({
     title: `Gatsby Desktop`,
     titleBarStyle: `hidden`,
+    width: 1024,
+    height: 768,
     fullscreenable: false,
     show: !process.env.GATSBY_DEVELOP_URL,
     trafficLightPosition: { x: 8, y: 18 },
