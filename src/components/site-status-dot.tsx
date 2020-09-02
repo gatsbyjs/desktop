@@ -32,6 +32,7 @@ export function SiteStatusDot({ status, ...rest }: IProps): JSX.Element {
         width: 8,
         height: 8,
         borderRadius: 5,
+        flexShrink: 0,
         ...(displayStatus === SiteDisplayStatus.Stopped && {
           border: `grey`,
         }),

@@ -75,10 +75,7 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
       }}
     >
       <TabLink {...props} to={url}>
-        <SiteStatusDot
-          status={site.siteStatus.status}
-          sx={{ mr: 2, flexShrink: 0 }}
-        />
+        <SiteStatusDot status={site.siteStatus.status} sx={{ mr: 2 }} />
         {site.name}
       </TabLink>
       <button

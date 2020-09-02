@@ -60,12 +60,6 @@ export function EditorsRadioButton({
                   onChange={onChange}
                   name={name}
                   checked={editor === selected}
-                  css={{
-                    // TODO remove this temp fix once this is fixed in gatsby-interface
-                    "& + span::before": {
-                      boxSizing: `border-box`,
-                    },
-                  }}
                 />
               }
             >

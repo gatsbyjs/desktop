@@ -11,9 +11,10 @@ import { SiteStatusDot } from "../site-status-dot"
 export interface IProps {
   logs: Array<string>
   status: Status
+  siteName: string
 }
 
-export function LogsLauncher({ logs, status }: IProps): JSX.Element {
+export function LogsLauncher({ logs, status, siteName }: IProps): JSX.Element {
   const error = isErrored(status)
   const [isOpen, setIsOpen] = useState(false)
   const toggleLogs = useCallback((): void => {
@@ -27,7 +28,7 @@ export function LogsLauncher({ logs, status }: IProps): JSX.Element {
       </GhostButton>
       <Modal aria-label="Logs" isOpen={isOpen} onDismiss={toggleLogs}>
         <ModalPanel maxWidth="80%">
-          <LogsViewer logs={logs} onDismiss={toggleLogs} />
+          <LogsViewer logs={logs} siteName={siteName} onDismiss={toggleLogs} />
         </ModalPanel>
       </Modal>
     </Fragment>

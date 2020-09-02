@@ -62,12 +62,6 @@ export function SiteCheckboxGroup({
                   value={optionValue}
                   defaultChecked={!hidden}
                   name={name}
-                  css={{
-                    // TODO remove this temp fix once this is fixed in gatsby-interface
-                    "& + span::before": {
-                      boxSizing: `border-box`,
-                    },
-                  }}
                 />
               }
               sx={{ pl: 7 }}

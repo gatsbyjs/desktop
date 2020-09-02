@@ -67,12 +67,6 @@ export function OnboardingIntro({ onGoNext }: IProps): JSX.Element {
           label="Yes, submit anonymous usage information"
           onChange={onToggle}
           checked={optedIn}
-          css={{
-            // TODO remove this temp fix once this is fixed in gatsby-interface
-            "input + span::before": {
-              boxSizing: `border-box`,
-            },
-          }}
         />
         <Button
           type="submit"
