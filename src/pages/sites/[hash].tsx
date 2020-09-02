@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from "theme-ui"
+import { jsx, Flex } from "theme-ui"
 import { Text } from "gatsby-interface"
 import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
 import { Layout } from "../../components/layout"
@@ -26,7 +26,7 @@ export default function SitePage({ params }: IProps): JSX.Element {
 
   return (
     <Layout>
-      <main>
+      <Flex>
         {running && port ? (
           <iframe
             frameBorder={0}
@@ -39,7 +39,7 @@ export default function SitePage({ params }: IProps): JSX.Element {
         ) : (
           <Text>Not running</Text>
         )}
-      </main>
+      </Flex>
     </Layout>
   )
 }
