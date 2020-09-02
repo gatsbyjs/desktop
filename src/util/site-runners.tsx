@@ -134,9 +134,17 @@ export function RunnerProvider({
 export function useSiteRunners(): {
   // An array of sites, sorted in reverse order by last launched
   sites: Array<GatsbySite>
+  // Excludes hidden sites
+  filteredSites: Array<GatsbySite>
   addSite?: (siteInfo: ISiteInfo) => GatsbySite | undefined
 } {
-  return useContext(RunnerContext)
+  const { sites, addSite } = useContext(RunnerContext)
+  const [hiddenSites] = useConfig(`hiddenSites`)
+  const filteredSites = sites.filter(
+    (site) => !hiddenSites?.includes(site.hash)
+  )
+
+  return { sites, addSite, filteredSites }
 }
 
 /**
@@ -146,6 +154,27 @@ export function useSiteRunners(): {
 export function useSiteForHash(hash: string): GatsbySite | undefined {
   const { sites } = useSiteRunners()
   return sites.find((site) => site.hash === hash)
+}
+
+/**
+ * Handles the list of hidden sites
+ */
+
+export function useHiddenSites(): {
+  hiddenSites: Array<string>
+  hideSite: (siteHash: string) => void
+  unhideSite: (siteHash: string) => void
+  setHiddenSites: (siteHashes: Array<string>) => void
+} {
+  const [hiddenSites = [], setHiddenSites] = useConfig(`hiddenSites`)
+
+  const hideSite = (siteHash: string): void =>
+    setHiddenSites(Array.from(new Set([...hiddenSites, siteHash])))
+
+  const unhideSite = (siteHash: string): void =>
+    setHiddenSites(hiddenSites.filter((site) => site !== siteHash))
+
+  return { hiddenSites, hideSite, unhideSite, setHiddenSites }
 }
 
 /**

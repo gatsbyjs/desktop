@@ -365,4 +365,13 @@ export interface IPCJobMessage {
 }
 
 export type IPCMessage = IPCMessageVersion | IPCMessageLog | IPCJobMessage
+
+export enum SiteError {
+  NoGatsbyRepo = `NO_GATSBY_REPO`,
+}
+
+export interface ISiteError {
+  error: SiteError
+  message: string
+}
 /* eslint-enable quotes */

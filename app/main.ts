@@ -7,6 +7,7 @@ import {
   Tray,
   Menu,
   Event,
+  shell,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -20,7 +21,7 @@ import {
 } from "./utils"
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
-import { Status, LogObject } from "./ipc-types"
+import { Status, LogObject, SiteError } from "./ipc-types"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -76,6 +77,11 @@ async function start(): Promise<void> {
         mainWindow.loadURL(makeUrl(`sites`))
       }
     }
+    // Intercept window.open/target=_blank from admin and open in browser
+    mainWindow.webContents.on(`new-window`, (event, url) => {
+      event.preventDefault()
+      shell.openExternal(url)
+    })
     mainWindow.show()
   }
 
@@ -235,7 +241,8 @@ async function start(): Promise<void> {
       console.log(e)
     }
     return {
-      error: `The selected folder is not a Gatsby site. Please try another`,
+      error: SiteError.NoGatsbyRepo,
+      message: `The selected folder is not a Gatsby site. Please try another`,
     }
   })
 }

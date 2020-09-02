@@ -1,9 +1,8 @@
 /** @jsx jsx */
-import { jsx, Flex } from "theme-ui"
+import { jsx } from "theme-ui"
 import { Text } from "gatsby-interface"
 import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
-
-import { TabNavigation } from "../../components/tab-navigation"
+import { Layout } from "../../components/layout"
 
 export interface IProps {
   params: {
@@ -16,28 +15,31 @@ export default function SitePage({ params }: IProps): JSX.Element {
 
   if (!site) {
     return (
-      <div>
-        <TabNavigation /> <p>Not found</p>
-      </div>
+      <Layout>
+        <main>
+          <Text>Not found</Text>
+        </main>
+      </Layout>
     )
   }
   const { running, port } = useSiteRunnerStatus(site)
 
   return (
-    <Flex sx={{ flexDirection: `column`, height: `100vh` }}>
-      <TabNavigation />
-      {running && port ? (
-        <iframe
-          frameBorder={0}
-          src={`http://localhost:${port}/___admin`}
-          sx={{
-            flex: 1,
-          }}
-          onError={(): void => console.error(`iframe error`)}
-        />
-      ) : (
-        <Text>Not running</Text>
-      )}
-    </Flex>
+    <Layout>
+      <main>
+        {running && port ? (
+          <iframe
+            frameBorder={0}
+            src={`http://localhost:${port}/___admin/`}
+            sx={{
+              flex: 1,
+            }}
+            onError={(): void => console.error(`iframe error`)}
+          />
+        ) : (
+          <Text>Not running</Text>
+        )}
+      </main>
+    </Layout>
   )
 }

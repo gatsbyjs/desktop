@@ -1,4 +1,4 @@
-import type { IProgram } from "gatsby/internal"
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
   Action,
   StructuredEventType,
@@ -37,8 +37,19 @@ export interface ISiteInfo {
 }
 
 export enum WorkerStatus {
-  runningInBackground = `RUNNING_IN_BACKGROUND`,
-  stopped = `STOPPED`,
+  RunningInBackground = `RUNNING_IN_BACKGROUND`,
+  Stopped = `STOPPED`,
+}
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export enum SiteError {
+  NoGatsbyRepo = `NO_GATSBY_REPO`,
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
+export interface ISiteError {
+  error: SiteError
+  message: string
 }
 
 export interface IMessage {
