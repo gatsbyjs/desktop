@@ -31,7 +31,9 @@ function canBeKilled(status: Status, pid?: number): boolean {
  * The item in the list of sites
  */
 export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { status, running, port, pid, rawLogs } = useSiteRunnerStatus(site)
+  const { status, running, port, pid, rawLogs, logs } = useSiteRunnerStatus(
+    site
+  )
 
   const { addTab } = useSiteTabs()
 
@@ -51,6 +53,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
         border: `grey`,
         borderRadius: 2,
         boxShadow: `raised`,
+        whiteSpace: `pre`,
       }}
     >
       <StatusIndicator displayStatus={displayStatus} />
@@ -64,6 +67,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
               fontFamily: `sans`,
               fontWeight: 600,
               fontSize: 1,
+              pr: 3,
             }}
           >
             {site.name ?? `Unnamed site`}
@@ -73,15 +77,22 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
             <span css={visuallyHiddenCss}>
               Site status: {siteDisplayStatusLabels[displayStatus]}
             </span>
-            {displayStatus === SiteDisplayStatus.Running && !!port ? (
-              <SiteLauncher port={port} />
-            ) : displayStatus === SiteDisplayStatus.Starting ? (
-              <Text as="span" sx={{ fontSize: 0, color: `grey.60` }}>
-                Starting site...
-              </Text>
-            ) : null}
+            <div sx={{ mr: 3 }}>
+              {displayStatus === SiteDisplayStatus.Running && !!port ? (
+                <SiteLauncher port={port} />
+              ) : displayStatus === SiteDisplayStatus.Starting ? (
+                <Text as="span" sx={{ fontSize: 0, color: `grey.60` }}>
+                  Starting site...
+                </Text>
+              ) : null}
+            </div>
             {!!rawLogs?.length && (
-              <LogsLauncher logs={rawLogs} status={status} />
+              <LogsLauncher
+                structuredLogs={logs}
+                logs={rawLogs}
+                status={status}
+                siteName={site.name}
+              />
             )}
             <SplitButton
               size="S"

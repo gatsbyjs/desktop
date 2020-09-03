@@ -22,7 +22,7 @@
     "fs-extra": "^9.0.1",
     "gatsby": "^2.24.47",
     "gatsby-design-tokens": "^2.0.10",
-    "gatsby-interface": "^0.0.193",
+    "gatsby-interface": "^0.0.196",
     "open-in-editor": "^2.2.0",
     "promisify-child-process": "^4.1.1",
     "react": "^16.13.1",

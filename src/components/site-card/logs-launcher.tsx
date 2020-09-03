@@ -7,13 +7,21 @@ import { LogsViewer } from "./logs-viewer"
 import { isErrored } from "../../util/site-status"
 import { GhostButton } from "./ghost-button"
 import { SiteStatusDot } from "../site-status-dot"
+import { LogObject } from "../../util/ipc-types"
 
 export interface IProps {
+  structuredLogs: Array<LogObject>
   logs: Array<string>
   status: Status
+  siteName: string
 }
 
-export function LogsLauncher({ logs, status }: IProps): JSX.Element {
+export function LogsLauncher({
+  structuredLogs,
+  logs,
+  status,
+  siteName,
+}: IProps): JSX.Element {
   const error = isErrored(status)
   const [isOpen, setIsOpen] = useState(false)
   const toggleLogs = useCallback((): void => {
@@ -26,8 +34,13 @@ export function LogsLauncher({ logs, status }: IProps): JSX.Element {
         View logs
       </GhostButton>
       <Modal aria-label="Logs" isOpen={isOpen} onDismiss={toggleLogs}>
-        <ModalPanel maxWidth="80%">
-          <LogsViewer logs={logs} onDismiss={toggleLogs} />
+        <ModalPanel css={{ width: `52rem` }} maxWidth="80%">
+          <LogsViewer
+            structuredLogs={structuredLogs}
+            logs={logs}
+            siteName={siteName}
+            onDismiss={toggleLogs}
+          />
         </ModalPanel>
       </Modal>
     </Fragment>

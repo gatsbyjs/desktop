@@ -19,7 +19,7 @@ export enum JobsApiNames {
   ImageProcessing = `IMAGE_PROCESSING`,
 }
 
-enum ActivityLogLevel {
+export enum ActivityLogLevel {
   ActivitySuccess = `ACTIVITY_SUCCESS`,
   ActivityFailed = `ACTIVITY_FAILED`,
   ActivityInterrupted = `ACTIVITY_INTERRUPTED`,
