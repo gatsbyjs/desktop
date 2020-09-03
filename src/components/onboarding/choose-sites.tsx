@@ -41,18 +41,7 @@ export function ChooseSites({
 
   const onSubmit: React.FocusEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    const siteCheckboxes = e.currentTarget.elements.namedItem(
-      `sitesToImport`
-    ) as RadioNodeList
-    // Because we use always use the auto-discovered list as the source of truth, rather than choosing sites,
-    // we actually hiden the unchecked sites
-    const hidden = []
-    for (const checkbox of siteCheckboxes) {
-      if (!(checkbox as HTMLInputElement).checked) {
-        hidden.push((checkbox as HTMLInputElement).value)
-      }
-    }
-    setHiddenSites(hidden)
+
     onGoNext()
   }
 
@@ -100,6 +89,7 @@ export function ChooseSites({
             sites={sites}
             hiddenSites={hiddenSites}
             browseSites={browseSites}
+            setHiddenSites={setHiddenSites}
           />
         )}
         {!noSites && (

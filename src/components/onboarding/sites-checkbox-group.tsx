@@ -12,6 +12,7 @@ import { MdArrowForward } from "react-icons/md"
 import { visuallyHiddenCss } from "../../util/a11y"
 import { GroupInputCard, GroupButtonCard } from "./group-input-card"
 import { FolderName } from "../folder-name"
+import { ChangeEvent, useCallback } from "react"
 
 export interface IProps {
   name: string
@@ -19,6 +20,7 @@ export interface IProps {
   required?: boolean
   error?: React.ReactNode
   hiddenSites: Array<string>
+  setHiddenSites: (sites: Array<string>) => void
   browseSites: () => void
 }
 
@@ -28,6 +30,7 @@ export function SiteCheckboxGroup({
   required,
   error,
   hiddenSites = [],
+  setHiddenSites,
   browseSites,
 }: IProps): JSX.Element {
   const {
@@ -39,6 +42,18 @@ export function SiteCheckboxGroup({
     required: required,
     error,
   })
+
+  const toggleSites = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const hash = event.currentTarget.value
+      if (event.currentTarget.checked) {
+        setHiddenSites(hiddenSites.filter((site) => site !== hash))
+      } else {
+        setHiddenSites(Array.from(new Set([...hiddenSites, hash])))
+      }
+    },
+    [setHiddenSites, hiddenSites]
+  )
 
   return (
     <FormFieldset>
@@ -60,8 +75,9 @@ export function SiteCheckboxGroup({
                 <StyledCheckbox
                   {...getOptionControlProps(optionValue)}
                   value={optionValue}
-                  defaultChecked={!hidden}
+                  checked={!hiddenSites.includes(optionValue)}
                   name={name}
+                  onChange={toggleSites}
                 />
               }
               sx={{ pl: 7 }}
