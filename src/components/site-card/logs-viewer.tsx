@@ -16,7 +16,7 @@ import {
   BuildLogItem,
 } from "gatsby-interface"
 import AnsiParser from "ansi-to-html"
-import { useMemo, useRef, useState, useLayoutEffect, useEffect } from "react"
+import { useMemo, useRef, useState, useLayoutEffect } from "react"
 import { LogObject, ActivityType, ActivityLogLevel } from "../../util/ipc-types"
 
 export interface IProps {
