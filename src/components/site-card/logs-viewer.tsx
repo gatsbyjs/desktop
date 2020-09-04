@@ -16,7 +16,7 @@ import {
   BuildLogItem,
 } from "gatsby-interface"
 import AnsiParser from "ansi-to-html"
-import { useMemo } from "react"
+import { useMemo, useRef, useState, useLayoutEffect } from "react"
 import { LogObject, ActivityType, ActivityLogLevel } from "../../util/ipc-types"
 
 export interface IProps {
@@ -32,6 +32,8 @@ export function LogsViewer({
   siteName,
   onDismiss,
 }: IProps): JSX.Element {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [activeTab, setActiveTab] = useState<number>(0)
   const parser = useMemo(
     () =>
       new AnsiParser({
@@ -40,21 +42,43 @@ export function LogsViewer({
     []
   )
 
+  const scrollToNewestLog = (): void => {
+    const lastLogItem = rootRef.current
+      ?.querySelectorAll(`[role="tabpanel"]`)
+      ?.[activeTab]?.querySelector(`ol`)?.lastElementChild
+
+    lastLogItem?.scrollIntoView(true)
+  }
+
+  useLayoutEffect(() => {
+    console.log({ activeTab })
+    setTimeout(scrollToNewestLog, 0)
+  }, [activeTab])
+
   console.log(`structuredLogs`, structuredLogs)
 
   return (
     <StyledPanel>
-      <Flex sx={{ flexDirection: `column`, height: `100%` }}>
+      <Flex sx={{ flexDirection: `column`, height: `100%` }} ref={rootRef}>
         <StyledPanelHeader onCloseButtonClick={onDismiss}>
           <strong sx={{ color: `blue.80` }}>{siteName}</strong>
         </StyledPanelHeader>
-        <Tabs sx={{ flexGrow: 1, display: `flex`, flexDirection: `column` }}>
+        <Tabs
+          sx={{
+            flexGrow: 1,
+            display: `flex`,
+            flexDirection: `column`,
+            minHeight: 0,
+          }}
+          index={activeTab}
+          onChange={setActiveTab}
+        >
           <TabList sx={{ flexGrow: 0 }}>
             <Tab>Logs</Tab>
             <Tab>Raw logs</Tab>
           </TabList>
-          <TabPanels sx={{ flexGrow: 1 }}>
-            <TabPanel sx={{ height: `100%` }}>
+          <TabPanels sx={{ flexGrow: 1, minHeight: 0 }}>
+            <TabPanel sx={{ height: `100%`, overflowY: `auto` }}>
               <StyledPanelBodySection>
                 <BuildLogsList
                   logItems={structuredLogs.map(logObjectToBuildLogItem)}
