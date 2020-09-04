@@ -44,9 +44,16 @@ jobs:
           name: "Gatsby Desktop Setup.exe"
           path: dist/*.exe
 
-      - name: Upload artifact - Linux
+      - name: Upload artifact - Linux Snap
         if: startsWith(matrix.os, 'Ubuntu')
         uses: actions/upload-artifact@v2
         with:
           name: "gatsby-desktop.snap"
           path: dist/*.snap
+
+      - name: Upload artifact - Linux Debian
+        if: startsWith(matrix.os, 'Ubuntu')
+        uses: actions/upload-artifact@v2
+        with:
+          name: "gatsby-desktop.deb"
+          path: dist/*.deb
