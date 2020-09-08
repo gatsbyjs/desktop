@@ -1,9 +1,9 @@
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui"
 import { keyframes } from "@emotion/core"
-import { Text, SplitButton, DropdownMenuItem, ThemeCss } from "gatsby-interface"
-import { PropsWithChildren, useCallback } from "react"
-import { GatsbySite, WorkerStatus, Status } from "../../controllers/site"
+import { Text, ThemeCss } from "gatsby-interface"
+import { PropsWithChildren, Fragment } from "react"
+import { GatsbySite } from "../../controllers/site"
 import { useSiteRunnerStatus, useSiteTabs } from "../../util/site-runners"
 import { FolderName } from "../folder-name"
 import { SiteLauncher } from "./site-launcher"
@@ -18,33 +18,30 @@ import {
 } from "../../util/site-status"
 import { visuallyHiddenCss } from "../../util/a11y"
 import { useConfig } from "../../util/use-config"
+import { ManageInDesktop } from "./manage-in-desktop"
+import { SiteActions } from "../site-actions"
+import { SetupAdmin } from "./setup-admin"
 
 interface IProps {
   site: GatsbySite
-}
-
-function canBeKilled(status: Status, pid?: number): boolean {
-  return status !== WorkerStatus.RunningInBackground || !!pid
 }
 
 /**
  * The item in the list of sites
  */
 export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
-  const { status, running, port, pid, rawLogs, logs } = useSiteRunnerStatus(
-    site
-  )
+  const { status, port, rawLogs, logs, running } = useSiteRunnerStatus(site)
 
   const { addTab } = useSiteTabs()
-
-  const stop = useCallback(() => site?.stop(), [site])
-  const start = useCallback(() => site?.start(), [site])
-  const clean = useCallback(() => site?.start(true), [site])
 
   console.log(site.name, status)
   const displayStatus = getSiteDisplayStatus(status)
 
   const [editor] = useConfig(`preferredEditor`)
+
+  const showManageInDesktop = running && !site.startedInDesktop
+  // TODO add a proper condition to display Gatsby Admin setup instructions
+  const showAdminInstructions = false
 
   return (
     <Flex
@@ -74,48 +71,39 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
             <FolderName sitePath={site.root} />
           </span>
           <Flex sx={{ alignItems: `center` }}>
-            <span css={visuallyHiddenCss}>
-              Site status: {siteDisplayStatusLabels[displayStatus]}
-            </span>
-            <div sx={{ mr: 3 }}>
-              {displayStatus === SiteDisplayStatus.Running && !!port ? (
-                <SiteLauncher port={port} />
-              ) : displayStatus === SiteDisplayStatus.Starting ? (
-                <Text as="span" sx={{ fontSize: 0, color: `grey.60` }}>
-                  Starting site...
-                </Text>
-              ) : null}
-            </div>
-            {!!rawLogs?.length && (
-              <LogsLauncher
-                structuredLogs={logs}
-                logs={rawLogs}
-                status={status}
-                siteName={site.name}
-              />
+            {showManageInDesktop ? (
+              <div sx={{ mr: 3 }}>
+                <ManageInDesktop />
+              </div>
+            ) : showAdminInstructions ? (
+              <div sx={{ mr: 3 }}>
+                <SetupAdmin />
+              </div>
+            ) : (
+              <Fragment>
+                <span css={visuallyHiddenCss}>
+                  Site status: {siteDisplayStatusLabels[displayStatus]}
+                </span>
+                <div sx={{ mr: 3 }}>
+                  {displayStatus === SiteDisplayStatus.Running && !!port ? (
+                    <SiteLauncher port={port} />
+                  ) : displayStatus === SiteDisplayStatus.Starting ? (
+                    <Text as="span" sx={{ fontSize: 0, color: `grey.60` }}>
+                      Starting site...
+                    </Text>
+                  ) : null}
+                </div>
+                {!!rawLogs?.length && (
+                  <LogsLauncher
+                    structuredLogs={logs}
+                    logs={rawLogs}
+                    status={status}
+                    siteName={site.name}
+                  />
+                )}
+              </Fragment>
             )}
-            <SplitButton
-              size="S"
-              variant="SECONDARY"
-              textVariant="BRAND"
-              onClick={start}
-              buttonLabel={running ? `Restart` : `Start`}
-              dropdownButtonLabel="More site actions"
-              sx={{ fontFamily: `sans`, fontSize: 0 }}
-            >
-              <DropdownMenuItem onSelect={clean}>
-                <Text sx={{ fontFamily: `sans`, fontSize: 1 }} as="span">
-                  Clear Cache and {running ? `Restart` : `Start`}
-                </Text>
-              </DropdownMenuItem>
-              {canBeKilled(status, pid) && (
-                <DropdownMenuItem onSelect={stop}>
-                  <Text sx={{ fontFamily: `sans`, fontSize: 1 }} as="span">
-                    Stop
-                  </Text>
-                </DropdownMenuItem>
-              )}
-            </SplitButton>
+            <SiteActions site={site} disabled={showManageInDesktop} />
           </Flex>
         </Flex>
         <Flex mt="auto">
