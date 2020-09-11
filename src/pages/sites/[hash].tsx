@@ -1,10 +1,11 @@
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui"
-import { Text, EmptyState } from "gatsby-interface"
+import { Text, EmptyState, Button } from "gatsby-interface"
 import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
 import { Layout } from "../../components/layout"
 import { SiteActions } from "../../components/site-actions"
 import { GatsbySite } from "../../controllers/site"
+import { GlobalStatus } from "../../util/ipc-types"
 
 export interface IProps {
   params: {
@@ -25,18 +26,17 @@ export default function SitePage({ params }: IProps): JSX.Element {
 }
 
 function SiteDetails({ site }: { site: GatsbySite }): JSX.Element {
-  const { running, port } = useSiteRunnerStatus(site)
+  const { running, port, status } = useSiteRunnerStatus(site)
 
   return (
     <Flex sx={{ height: `100%` }}>
-      {running && port ? (
+      {running && status !== GlobalStatus.InProgress && port ? (
         <iframe
           frameBorder={0}
           src={`http://localhost:${port}/___admin/`}
           sx={{
             flex: 1,
           }}
-          onError={(): void => console.error(`iframe error`)}
         />
       ) : (
         <Flex
@@ -52,7 +52,11 @@ function SiteDetails({ site }: { site: GatsbySite }): JSX.Element {
               heading="This site is not running"
               text={`Please start the gatsby develop process in order to use Gatsby \u000A Admin for this site.`}
               primaryAction={
-                <SiteActions site={site} variant="PRIMARY" size="M" />
+                status === GlobalStatus.InProgress ? (
+                  <Button variant="PRIMARY" size="M" loading={true} />
+                ) : (
+                  <SiteActions site={site} variant="PRIMARY" size="M" />
+                )
               }
             />
           </div>
