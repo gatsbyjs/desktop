@@ -2,12 +2,13 @@
 
 A proof-of-concept desktop app for managing your Gatsby sites.
 
-- [Installation](#installation)
+* [Installation](#installation)
   - [Installing built packages](#installing-built-packages)
   - [Installing from source](#installing-from-source)
-- [Screenshots](#screenshots)
-- [Architecture](#architecture)
-- [Development](#development)
+
+* [Screenshots](#screenshots)
+* [Architecture](#architecture)
+* [Development](#development)
   - [Release process](#release-process)
 
 ## Installation
