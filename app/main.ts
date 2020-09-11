@@ -48,6 +48,8 @@ function makeWindow(): BrowserWindow {
   })
 }
 
+let tray: Tray
+
 async function start(): Promise<void> {
   fixPath()
   /**
@@ -200,7 +202,7 @@ async function start(): Promise<void> {
 
   mainWindow = makeWindow()
 
-  const tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
+  tray = new Tray(path.resolve(dir, `assets`, `IconTemplate.png`))
   const contextMenu = Menu.buildFromTemplate([
     {
       label: `Show Gatsby Desktop`,
