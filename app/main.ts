@@ -44,6 +44,7 @@ function makeWindow(): BrowserWindow {
     webPreferences: {
       nodeIntegrationInWorker: true,
       nodeIntegration: true,
+      webSecurity: false,
     },
   })
 }
@@ -145,7 +146,19 @@ async function start(): Promise<void> {
     }
   )
 
-  app.on(`before-quit`, () => {
+  app.on(`before-quit`, async (event) => {
+    const { response } = await dialog.showMessageBox({
+      message: `Quit Gatsby Desktop?`,
+      detail: `This will stop all running sites`,
+      buttons: [`Cancel`, `Quit`],
+      defaultId: 1,
+      type: `question`,
+    })
+
+    if (response !== 1) {
+      event.preventDefault()
+      return
+    }
     siteLaunchers.forEach((site) => site.stop())
     stopWatching()
   })
@@ -212,17 +225,7 @@ async function start(): Promise<void> {
       label: `Quit...`,
       click: async (): Promise<void> => {
         openMainWindow()
-        const { response } = await dialog.showMessageBox({
-          message: `Quit Gatsby Desktop?`,
-          detail: `This will stop all running sites`,
-          buttons: [`Cancel`, `Quit`],
-          defaultId: 1,
-          type: `question`,
-        })
-
-        if (response === 1) {
-          app.quit()
-        }
+        app.quit()
       },
     },
   ])
