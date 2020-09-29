@@ -8,6 +8,7 @@ import {
   Menu,
   Event,
   shell,
+  screen,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -90,6 +91,7 @@ async function start(): Promise<void> {
       shell.openExternal(url)
     })
     mainWindow.show()
+    trackEvent(`WINDOW_OPEN`)
   }
 
   // Start setting up listeners
@@ -171,6 +173,14 @@ async function start(): Promise<void> {
     }
   })
 
+  app.on(`browser-window-focus`, () => {
+    trackEvent(`WINDOW_FOCUS`)
+  })
+
+  app.on(`browser-window-blur`, () => {
+    trackEvent(`WINDOW_BLUR`)
+  })
+
   ipcMain.on(`quit-app`, () => {
     app.quit()
   })
@@ -215,7 +225,14 @@ async function start(): Promise<void> {
 
   await app.whenReady()
 
+  // Check if the user has opted-in to telemetry
   initializeTelemetry()
+
+  const displays = screen.getAllDisplays()
+
+  trackEvent(`DISPLAY_METADATA`, {
+    name: JSON.stringify(displays.map(({ size }) => size)),
+  })
 
   mainWindow = makeWindow()
 
@@ -265,6 +282,7 @@ async function start(): Promise<void> {
 app.on(`window-all-closed`, (event: Event) => {
   //  Don't quit when all windows are closed
   event.preventDefault()
+  trackEvent(`WINDOW_CLOSE`)
 })
 
 start()

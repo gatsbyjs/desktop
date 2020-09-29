@@ -101,7 +101,6 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
 
 export function TabNavigation(): JSX.Element {
   const { siteTabs } = useSiteTabs()
-  console.log(`tab nav`)
   return (
     <Flex
       as="nav"

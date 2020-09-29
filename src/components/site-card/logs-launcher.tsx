@@ -8,12 +8,14 @@ import { isErrored } from "../../util/site-status"
 import { GhostButton } from "./ghost-button"
 import { SiteStatusDot } from "../site-status-dot"
 import { LogObject } from "../../util/ipc-types"
+import { trackEvent } from "../../util/telemetry"
 
 export interface IProps {
   structuredLogs: Array<LogObject>
   logs: Array<string>
   status: Status
   siteName: string
+  siteHash?: string
 }
 
 export function LogsLauncher({
@@ -21,12 +23,18 @@ export function LogsLauncher({
   logs,
   status,
   siteName,
+  siteHash,
 }: IProps): JSX.Element {
   const error = isErrored(status)
   const [isOpen, setIsOpen] = useState(false)
   const toggleLogs = useCallback((): void => {
-    setIsOpen((open) => !open)
-  }, [setIsOpen])
+    setIsOpen((open) => {
+      if (!open) {
+        trackEvent(`OPEN_LOGS`, { siteHash })
+      }
+      return !open
+    })
+  }, [setIsOpen, siteHash])
   return (
     <Fragment>
       <GhostButton onClick={toggleLogs} size="S">

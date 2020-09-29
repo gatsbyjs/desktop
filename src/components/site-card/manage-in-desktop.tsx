@@ -12,6 +12,7 @@ import {
 } from "gatsby-interface"
 import { Fragment, useState } from "react"
 import { GhostButton } from "./ghost-button"
+import { trackEvent } from "../../util/telemetry"
 
 export function ManageInDesktop(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
@@ -20,9 +21,14 @@ export function ManageInDesktop(): JSX.Element {
     setIsOpen(false)
   }
 
+  const openModal = (): void => {
+    setIsOpen(true)
+    trackEvent(`SHOW_MANAGE_SITE_HELP`)
+  }
+
   return (
     <Fragment>
-      <GhostButton onClick={(): void => setIsOpen(true)} size="S">
+      <GhostButton onClick={openModal} size="S">
         Manage this site in Gatsby Desktop
       </GhostButton>
       <Modal

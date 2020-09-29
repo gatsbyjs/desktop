@@ -7,7 +7,7 @@ export function trackFeatureIsUsed(name: string): void {
 
 export function trackEvent(
   input: string | Array<string>,
-  tags?: ITelemetryTagsPayload
+  tags?: ITelemetryTagsPayload & { siteHash?: string }
 ): void {
   ipcRenderer.send(`telemetry-trackEvent`, input, tags)
 }

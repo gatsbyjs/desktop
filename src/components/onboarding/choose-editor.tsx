@@ -11,6 +11,7 @@ import {
 import { EditorsRadioButton } from "./editors-radio-button"
 import { ALL_EDITORS, CodeEditor } from "../../util/editors"
 import { useConfig } from "../../util/use-config"
+import { trackEvent } from "../../util/telemetry"
 
 export interface IProps
   extends Pick<WizardStepProps, "currentStep" | "totalSteps"> {
@@ -28,9 +29,10 @@ export function ChooseEditor({
   const onSubmit: React.FocusEventHandler<HTMLFormElement> = useCallback(
     (e) => {
       e.preventDefault()
+      trackEvent(`SET_EDITOR`, { name: preferredEditor })
       onGoNext()
     },
-    [onGoNext]
+    [onGoNext, preferredEditor]
   )
 
   console.log({ preferredEditor })

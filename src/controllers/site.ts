@@ -15,6 +15,7 @@ import {
 import { createContentDigest } from "gatsby-core-utils"
 
 import { ipcRenderer } from "electron"
+import { trackEvent } from "../util/telemetry"
 
 // TODO: move these to gatsby-core-utils
 
@@ -144,6 +145,10 @@ export class GatsbySite {
     })
 
     ipcRenderer.send(`launch-site`, { root: this.root, hash: this.hash, clean })
+    trackEvent(clean ? `SITE_CLEAR_CACHE_AND_START` : `SITE_START`, {
+      siteHash: this.hash,
+      pathname: document?.location.pathname,
+    })
   }
 
   public updateStatus(newStatus: Partial<ISiteStatus>): void {
@@ -224,6 +229,10 @@ export class GatsbySite {
   public stop(): void {
     ipcRenderer.send(`stop-site`, { hash: this.hash, pid: this.siteStatus.pid })
     this.updateStatus({ status: WorkerStatus.Stopped, running: false })
+    trackEvent(`SITE_STOP`, {
+      siteHash: this.hash,
+      pathname: document?.location.pathname,
+    })
   }
 
   logMessage(message: string): void {
