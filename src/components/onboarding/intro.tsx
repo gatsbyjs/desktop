@@ -64,7 +64,7 @@ export function OnboardingIntro({ onGoNext }: IProps): JSX.Element {
         <CheckboxFieldBlock
           id="anonUsage"
           name="anonUsage"
-          label="Yes, submit anonymous usage information"
+          label="Yes, help improve Gatsby Desktop"
           onChange={onToggle}
           checked={optedIn}
         />
