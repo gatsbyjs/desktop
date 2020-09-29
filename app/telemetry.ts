@@ -13,17 +13,16 @@ interface IConfigType {
   telemetryOptIn: boolean
 }
 
-let telemetryEnabled = true
+let telemetryEnabled: boolean | undefined
 
-function telemetryTrackFeatureIsUsed(event: IpcMainEvent, name: string): void {
+export function telemetryTrackFeatureIsUsed(name: string): void {
   console.log(`track feature is used`, name, { telemetryEnabled })
   if (telemetryEnabled) {
     trackFeatureIsUsed(name)
   }
 }
 
-function trackEvent(
-  event: IpcMainEvent,
+export function trackEvent(
   input: string | Array<string>,
   tags?: ITelemetryTagsPayload
 ): void {
@@ -41,10 +40,25 @@ export function initializeTelemetry(): void {
   store.onDidChange(`telemetryOptIn`, (newValue?: boolean) => {
     telemetryEnabled = !!newValue
   })
-  if (store.get(`telemetryOptIn`) === false) {
+  telemetryEnabled = store.get(`telemetryOptIn`)
+  if (telemetryEnabled === false) {
     console.log(`running with telemetry disabled`)
     trackCli(`RUNNING_WITH_TELEMETRY_DISABLED`)
+  } else {
+    trackCli(`GATSBY_DESKTOP_STARTED`)
+    console.log(`telemetry enabled or not chosen`, { telemetryEnabled })
   }
-  ipcMain.on(`telemetry-trackFeatureIsUsed`, telemetryTrackFeatureIsUsed)
-  ipcMain.on(`telemetry-trackEvent`, trackEvent)
+  ipcMain.on(
+    `telemetry-trackFeatureIsUsed`,
+    (event: IpcMainEvent, name: string): void =>
+      telemetryTrackFeatureIsUsed(name)
+  )
+  ipcMain.on(
+    `telemetry-trackEvent`,
+    (
+      event: IpcMainEvent,
+      input: string | Array<string>,
+      tags?: ITelemetryTagsPayload
+    ): void => trackEvent(input, tags)
+  )
 }

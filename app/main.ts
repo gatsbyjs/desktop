@@ -22,7 +22,7 @@ import {
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
-import { initializeTelemetry } from "./telemetry"
+import { initializeTelemetry, trackEvent } from "./telemetry"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -160,6 +160,7 @@ async function start(): Promise<void> {
       event.preventDefault()
       return
     }
+    trackEvent(`GATSBY_DESKTOP_QUIT`)
     siteLaunchers.forEach((site) => site.stop())
     stopWatching()
   })
