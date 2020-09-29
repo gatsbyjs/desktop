@@ -1,7 +1,7 @@
 {
   "name": "gatsby-desktop",
   "description": "Gatsby Desktop",
-  "version": "0.0.1-alpha.7",
+  "version": "0.0.1-alpha.8",
   "main": "lib/main.js",
   "homepage": "https://www.gatsbyjs.com/",
   "author": "<matt@gatsbyjs.com>",
@@ -93,13 +93,41 @@
       "target": "dmg",
       "category": "public.app-category.developer-tools"
     },
-    "snap": {
+    "dmg": {
+      "background": "assets/background.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "snap"
+      ],
+      "category": "Development",
+      "desktop": {
+        "Name": "Gatsby Desktop",
+        "Type": "Application",
+        "Icon": "/opt/Gatsby Desktop/gatsby-desktop.png",
+        "Categories": "Development;System;Utility;"
+      },
+      "executableName": "gatsby-desktop",
+      "extraFiles": [
+        {
+          "from": "assets/icon.png",
+          "to": "gatsby-desktop.png"
+        }
+      ]
+    },
+    "deb": {
+      "maintainer": "nicholas@gatsbyjs.com",
+      "priority": "optional",
       "publish": [
         "github"
       ]
     },
-    "dmg": {
-      "background": "assets/background.png"
+    "snap": {
+      "publish": [
+        "github"
+      ]
     }
   },
   "repository": "git@github.com:gatsbyjs/desktop.git"

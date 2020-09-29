@@ -1,8 +1,11 @@
 /** @jsx jsx */
 import { jsx, Flex } from "theme-ui"
-import { Text } from "gatsby-interface"
+import { Text, EmptyState, Button } from "gatsby-interface"
 import { useSiteRunnerStatus, useSiteForHash } from "../../util/site-runners"
 import { Layout } from "../../components/layout"
+import { SiteActions } from "../../components/site-actions"
+import { GatsbySite } from "../../controllers/site"
+import { GlobalStatus } from "../../util/ipc-types"
 
 export interface IProps {
   params: {
@@ -13,33 +16,52 @@ export interface IProps {
 export default function SitePage({ params }: IProps): JSX.Element {
   const site = useSiteForHash(params.hash)
 
-  if (!site) {
-    return (
-      <Layout>
-        <main>
-          <Text>Not found</Text>
-        </main>
-      </Layout>
-    )
-  }
-  const { running, port } = useSiteRunnerStatus(site)
-
   return (
     <Layout>
-      <Flex>
-        {running && port ? (
-          <iframe
-            frameBorder={0}
-            src={`http://localhost:${port}/___admin/`}
-            sx={{
-              flex: 1,
-            }}
-            onError={(): void => console.error(`iframe error`)}
-          />
-        ) : (
-          <Text>Not running</Text>
-        )}
-      </Flex>
+      <main sx={{ height: `100%` }}>
+        {site ? <SiteDetails site={site} /> : <Text>Not found</Text>}
+      </main>
     </Layout>
+  )
+}
+
+function SiteDetails({ site }: { site: GatsbySite }): JSX.Element {
+  const { running, port, status } = useSiteRunnerStatus(site)
+
+  return (
+    <Flex sx={{ height: `100%` }}>
+      {running && status !== GlobalStatus.InProgress && port ? (
+        <iframe
+          frameBorder={0}
+          src={`http://localhost:${port}/___admin/`}
+          sx={{
+            flex: 1,
+          }}
+        />
+      ) : (
+        <Flex
+          sx={{
+            alignItems: `center`,
+            justifyContent: `center`,
+            width: `100%`,
+            height: `100%`,
+          }}
+        >
+          <div sx={{ maxWidth: `20rem` }}>
+            <EmptyState
+              heading="This site is not running"
+              text={`Please start the gatsby develop process in order to use Gatsby \u000A Admin for this site.`}
+              primaryAction={
+                status === GlobalStatus.InProgress ? (
+                  <Button variant="PRIMARY" size="M" loading={true} />
+                ) : (
+                  <SiteActions site={site} variant="PRIMARY" size="M" />
+                )
+              }
+            />
+          </div>
+        </Flex>
+      )}
+    </Flex>
   )
 }
