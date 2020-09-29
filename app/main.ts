@@ -22,6 +22,7 @@ import {
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
+import { initializeTelemetry } from "./telemetry"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -197,6 +198,8 @@ async function start(): Promise<void> {
   // Wait til the app is ready
 
   await app.whenReady()
+
+  initializeTelemetry()
 
   mainWindow = makeWindow()
 
