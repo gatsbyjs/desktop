@@ -15,7 +15,7 @@ import detectPort from "detect-port"
 import express from "express"
 import serveStatic from "serve-static"
 import fixPath from "fix-path"
-
+import { autoUpdater } from "electron-updater"
 import {
   hasGatsbyInstalled,
   loadPackageJson,
@@ -24,6 +24,7 @@ import {
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
+import log from "electron-log"
 import { initializeTelemetry, trackEvent } from "./telemetry"
 interface ISiteStatus {
   startedInDesktop?: boolean
@@ -65,9 +66,14 @@ function makeWindow(): BrowserWindow {
   return mainWindow
 }
 
+// We define tray in the top level scope to avoid it getting GC'd
+
 let tray: Tray
 
 async function start(): Promise<void> {
+  log.transports.file.level = `info`
+  autoUpdater.logger = log
+  log.info(`App starting...`)
   fixPath()
   /**
    * Start a static server to serve the app's resources.
@@ -234,6 +240,7 @@ async function start(): Promise<void> {
 
   await app.whenReady()
 
+  autoUpdater.checkForUpdatesAndNotify()
   // Check if the user has opted-in to telemetry
   initializeTelemetry()
 
