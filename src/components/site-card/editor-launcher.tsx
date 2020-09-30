@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
 import { IconButton, Tooltip } from "gatsby-interface"
-import { useMemo } from "react"
+import { useMemo, useCallback } from "react"
 import openInEditor from "open-in-editor"
 import { editorIcons, CodeEditor, editorLabels } from "../../util/editors"
 import { trackEvent } from "../../util/telemetry"
@@ -21,10 +21,10 @@ export function EditorLauncher({
     editor,
   ])
 
-  const openEditor = (): void => {
+  const openEditor = useCallback((): void => {
     trackEvent(`LAUNCH_EDITOR`, { name: editor, siteHash })
     editorInstance.open(path)
-  }
+  }, [editor, siteHash, editorInstance])
 
   return (
     <Tooltip
