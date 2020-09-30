@@ -21,6 +21,7 @@ import { useConfig } from "../../util/use-config"
 import { ManageInDesktop } from "./manage-in-desktop"
 import { SiteActions } from "../site-actions"
 import { SetupAdmin } from "./setup-admin"
+import { trackEvent } from "../../util/telemetry"
 
 interface IProps {
   site: GatsbySite
@@ -86,7 +87,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
                 </span>
                 <div sx={{ mr: 3 }}>
                   {displayStatus === SiteDisplayStatus.Running && !!port ? (
-                    <SiteLauncher port={port} />
+                    <SiteLauncher port={port} siteHash={site.hash} />
                   ) : displayStatus === SiteDisplayStatus.Starting ? (
                     <Text as="span" sx={{ fontSize: 0, color: `grey.60` }}>
                       Starting site...
@@ -99,6 +100,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
                     logs={rawLogs}
                     status={status}
                     siteName={site.name}
+                    siteHash={site.hash}
                   />
                 )}
               </Fragment>
@@ -107,7 +109,11 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
           </Flex>
         </Flex>
         <Flex mt="auto">
-          <EditorLauncher path={site.root} editor={editor} />
+          <EditorLauncher
+            path={site.root}
+            editor={editor}
+            siteHash={site.hash}
+          />
         </Flex>
       </Flex>
       <button
@@ -126,6 +132,7 @@ export function SiteCard({ site }: PropsWithChildren<IProps>): JSX.Element {
         aria-label="Open site admin"
         onClick={(event): void => {
           event.stopPropagation()
+          trackEvent(`CLICK_TO_OPEN_ADMIN_TAB`, { siteHash: site.hash })
           addTab(site.hash)
           navigate(`/sites/${site.hash}`)
         }}

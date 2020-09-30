@@ -11,6 +11,7 @@ import {
   StyledModalBody,
   StyledModalActions,
 } from "gatsby-interface"
+import { trackEvent } from "../util/telemetry"
 
 export function useSiteBrowser(
   onSelectSite?: (siteInfo: ISiteInfo) => void,
@@ -21,6 +22,7 @@ export function useSiteBrowser(
   const closeErrorModal = (): void => setSiteError(null)
 
   const browse = useCallback(async () => {
+    trackEvent(`CLICK_ADD_SITE`)
     console.log(`browsing`)
     // Sends a message to the main process asking for a file dialog.
     // It also verifies that it's a Gatsby site before returning it.

@@ -8,6 +8,8 @@ import {
   Menu,
   Event,
   shell,
+  WebContents,
+  screen,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -23,6 +25,7 @@ import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
 import log from "electron-log"
+import { initializeTelemetry, trackEvent } from "./telemetry"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -32,8 +35,16 @@ interface ISiteStatus {
 
 const dir = path.resolve(__dirname, `..`)
 
+function listenForNewWindow(webContents: WebContents): void {
+  webContents.on(`new-window`, (event, url) => {
+    // Intercept window.open/target=_blank from admin and open in browser
+    event.preventDefault()
+    shell.openExternal(url)
+  })
+}
+
 function makeWindow(): BrowserWindow {
-  return new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     title: `Gatsby Desktop`,
     titleBarStyle: `hidden`,
     width: 1024,
@@ -48,6 +59,11 @@ function makeWindow(): BrowserWindow {
       webSecurity: false,
     },
   })
+  listenForNewWindow(mainWindow.webContents)
+  mainWindow.webContents.on(`did-attach-webview`, (event, webContents) =>
+    listenForNewWindow(webContents)
+  )
+  return mainWindow
 }
 
 // We define tray in the top level scope to avoid it getting GC'd
@@ -89,12 +105,8 @@ async function start(): Promise<void> {
         mainWindow.loadURL(makeUrl())
       }
     }
-    // Intercept window.open/target=_blank from admin and open in browser
-    mainWindow.webContents.on(`new-window`, (event, url) => {
-      event.preventDefault()
-      shell.openExternal(url)
-    })
     mainWindow.show()
+    trackEvent(`WINDOW_OPEN`)
   }
 
   // Start setting up listeners
@@ -165,6 +177,7 @@ async function start(): Promise<void> {
       event.preventDefault()
       return
     }
+    trackEvent(`GATSBY_DESKTOP_QUIT`)
     siteLaunchers.forEach((site) => site.stop())
     stopWatching()
   })
@@ -173,6 +186,14 @@ async function start(): Promise<void> {
     if (!hasVisibleWindows) {
       openMainWindow()
     }
+  })
+
+  app.on(`browser-window-focus`, () => {
+    trackEvent(`WINDOW_FOCUS`)
+  })
+
+  app.on(`browser-window-blur`, () => {
+    trackEvent(`WINDOW_BLUR`)
   })
 
   ipcMain.on(`quit-app`, () => {
@@ -220,6 +241,14 @@ async function start(): Promise<void> {
   await app.whenReady()
 
   autoUpdater.checkForUpdatesAndNotify()
+  // Check if the user has opted-in to telemetry
+  initializeTelemetry()
+
+  const displays = screen.getAllDisplays()
+
+  trackEvent(`DISPLAY_METADATA`, {
+    name: JSON.stringify(displays.map(({ size }) => size)),
+  })
 
   mainWindow = makeWindow()
 
@@ -269,6 +298,7 @@ async function start(): Promise<void> {
 app.on(`window-all-closed`, (event: Event) => {
   //  Don't quit when all windows are closed
   event.preventDefault()
+  trackEvent(`WINDOW_CLOSE`)
 })
 
 start()

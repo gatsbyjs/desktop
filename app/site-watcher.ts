@@ -54,7 +54,6 @@ export function sortSites(
 }
 
 export async function deleteSiteMetaData(metadataPath: string): Promise<void> {
-  console.log(`delete`, metadataPath)
   await fs.unlink(path.join(configDir, metadataPath))
 }
 
@@ -68,7 +67,6 @@ export async function cleanupDeletedSites(
         !site.sitePath ||
         !(await fs.pathExists(path.join(site.sitePath, `package.json`)))
       ) {
-        console.log(`deleting`, metadataPath, site.sitePath)
         deleteSiteMetaData(metadataPath)
       }
     })
@@ -102,7 +100,6 @@ export async function watchSites(
   }
 
   siteWatcher.on(`unlink`, (pkgJsonPath) => {
-    console.log(`site deleted`, path)
     const metadataPath = reverseLookup.get(pkgJsonPath)
     if (metadataPath) {
       deleteSiteMetaData(metadataPath)
@@ -110,7 +107,6 @@ export async function watchSites(
   })
 
   siteWatcher.on(`change`, async (pkgJsonPath) => {
-    console.log(`packagejson changed`, pkgJsonPath)
     const metadata = reverseLookup.get(pkgJsonPath)
     if (!metadata) {
       return
@@ -120,13 +116,11 @@ export async function watchSites(
     const newPkgJson = await fs.readJSON(pkgJsonPath)
 
     if (newPkgJson?.name && newPkgJson.name !== siteInfo?.name) {
-      console.log(`changing site name`)
       mergeSiteInfo(metadata, { name: newPkgJson?.name })
     }
   })
 
   metadataWatcher.on(`add`, async (metadataPath) => {
-    console.log({ metadataPath })
     const json = await getSiteInfo(metadataPath)
     if (json.name === `gatsby-desktop` || !json.sitePath) {
       return
@@ -156,7 +150,6 @@ export async function watchSites(
       deleteSiteMetaData(metadataPath)
       return
     }
-    console.log(`added`, json)
     sites.set(metadataPath, json)
     update(sites)
   })

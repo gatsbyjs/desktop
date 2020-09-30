@@ -12,6 +12,7 @@ import {
 } from "./onboarding-wizard-step"
 import { useSiteBrowser } from "../site-browser"
 import { ISiteInfo } from "../../controllers/site"
+import { trackEvent } from "../../util/telemetry"
 
 export interface IProps
   extends Pick<WizardStepProps, "currentStep" | "totalSteps"> {
@@ -41,6 +42,11 @@ export function ChooseSites({
 
   const onSubmit: React.FocusEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+
+    sites.forEach((site) => trackEvent(`SITE_ADDED`, { siteHash: site.hash }))
+    hiddenSites.forEach((hash) =>
+      trackEvent(`SITE_DESELECTED`, { siteHash: hash })
+    )
 
     onGoNext()
   }
