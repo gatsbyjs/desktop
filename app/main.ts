@@ -8,6 +8,7 @@ import {
   Menu,
   Event,
   shell,
+  WebContents,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -31,8 +32,16 @@ interface ISiteStatus {
 
 const dir = path.resolve(__dirname, `..`)
 
+function listenForNewWindow(webContents: WebContents): void {
+  webContents.on(`new-window`, (event, url) => {
+    // Intercept window.open/target=_blank from admin and open in browser
+    event.preventDefault()
+    shell.openExternal(url)
+  })
+}
+
 function makeWindow(): BrowserWindow {
-  return new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     title: `Gatsby Desktop`,
     titleBarStyle: `hidden`,
     width: 1024,
@@ -47,6 +56,11 @@ function makeWindow(): BrowserWindow {
       webSecurity: false,
     },
   })
+  listenForNewWindow(mainWindow.webContents)
+  mainWindow.webContents.on(`did-attach-webview`, (event, webContents) =>
+    listenForNewWindow(webContents)
+  )
+  return mainWindow
 }
 
 let tray: Tray
@@ -83,11 +97,6 @@ async function start(): Promise<void> {
         mainWindow.loadURL(makeUrl())
       }
     }
-    // Intercept window.open/target=_blank from admin and open in browser
-    mainWindow.webContents.on(`new-window`, (event, url) => {
-      event.preventDefault()
-      shell.openExternal(url)
-    })
     mainWindow.show()
   }
 
