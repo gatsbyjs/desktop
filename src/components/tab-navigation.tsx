@@ -9,7 +9,8 @@ import { useLocation } from "@reach/router"
 import { MdClear } from "react-icons/md"
 import { SiteStatusDot } from "./site-status-dot"
 
-interface ITabProps extends Omit<GatsbyLinkProps<unknown>, "to" | "ref"> {
+interface ITabProps
+  extends Omit<GatsbyLinkProps<unknown>, "to" | "ref" | "sx"> {
   site: GatsbySite
 }
 
@@ -101,7 +102,6 @@ export function SiteTabLink({ site, ...props }: ITabProps): JSX.Element {
 
 export function TabNavigation(): JSX.Element {
   const { siteTabs } = useSiteTabs()
-  console.log(`tab nav`)
   return (
     <Flex
       as="nav"

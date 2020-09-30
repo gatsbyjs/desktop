@@ -47,6 +47,10 @@ Gatsby Desktop is written in TypeScript. We use [microbundle](https://github.com
 
 To debug the renderer, use [Chrome devtools](chrome://inspect/#devices) and listen to port 8315.
 
+## Telemetry
+
+If you opt-in to telemetry, the app sends anonymous information about how use it. This is mainly checking which features you use and how much you use them. This helps us prioritize which features to develop, and to improve the app. This is particularly important as it is a proof-of-concept. This is entirely optional though, so if you don't opt-in we don't track anything except the fact that you have opted-out. All other events are not sent. This setting is separate from the telemetry setting for Gatsby itself. You can see more details on telemetry in Gatsby at https://gatsby.dev/telemetry
+
 ### Release process
 
 Create a draft release in GitHub, with the tag as the new version number prefixed with `v`, e.g. `v0.0.1-alpha.2`. Update the version number in package.json to match, and commit. Push that to master and GitHub Actions should do a build and eventually attach the packaged files to the draft release. Once the build is complete, publish the draft release.

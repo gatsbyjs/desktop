@@ -6,6 +6,7 @@ import { Heading, Text, LinkButton } from "gatsby-interface"
 import { MdArrowForward } from "react-icons/md"
 import { Layout } from "../../components/layout"
 import { useConfig } from "../../util/use-config"
+import { trackEvent } from "../../util/telemetry"
 
 export default function MainPage(): JSX.Element {
   const { filteredSites } = useSiteRunners()
@@ -36,6 +37,7 @@ export default function MainPage(): JSX.Element {
           </Text>
           <LinkButton
             to="/onboarding/intro"
+            onClick={(): void => trackEvent(`CLICK_TO_RERUN_ONBOARDING`)}
             // Easter egg: right click to clear config
             onContextMenu={(): void => store?.clear()}
             size="S"

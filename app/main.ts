@@ -9,6 +9,7 @@ import {
   Event,
   shell,
   WebContents,
+  screen,
 } from "electron"
 import detectPort from "detect-port"
 import express from "express"
@@ -23,6 +24,7 @@ import {
 import { watchSites, stopWatching, ISiteMetadata } from "./site-watcher"
 import { SiteLauncher, Message } from "./launcher"
 import { Status, LogObject, SiteError } from "./ipc-types"
+import { initializeTelemetry, trackEvent } from "./telemetry"
 interface ISiteStatus {
   startedInDesktop?: boolean
   status: Status
@@ -98,6 +100,7 @@ async function start(): Promise<void> {
       }
     }
     mainWindow.show()
+    trackEvent(`WINDOW_OPEN`)
   }
 
   // Start setting up listeners
@@ -168,6 +171,7 @@ async function start(): Promise<void> {
       event.preventDefault()
       return
     }
+    trackEvent(`GATSBY_DESKTOP_QUIT`)
     siteLaunchers.forEach((site) => site.stop())
     stopWatching()
   })
@@ -176,6 +180,14 @@ async function start(): Promise<void> {
     if (!hasVisibleWindows) {
       openMainWindow()
     }
+  })
+
+  app.on(`browser-window-focus`, () => {
+    trackEvent(`WINDOW_FOCUS`)
+  })
+
+  app.on(`browser-window-blur`, () => {
+    trackEvent(`WINDOW_BLUR`)
   })
 
   ipcMain.on(`quit-app`, () => {
@@ -221,6 +233,15 @@ async function start(): Promise<void> {
   // Wait til the app is ready
 
   await app.whenReady()
+
+  // Check if the user has opted-in to telemetry
+  initializeTelemetry()
+
+  const displays = screen.getAllDisplays()
+
+  trackEvent(`DISPLAY_METADATA`, {
+    name: JSON.stringify(displays.map(({ size }) => size)),
+  })
 
   mainWindow = makeWindow()
 
@@ -270,6 +291,7 @@ async function start(): Promise<void> {
 app.on(`window-all-closed`, (event: Event) => {
   //  Don't quit when all windows are closed
   event.preventDefault()
+  trackEvent(`WINDOW_CLOSE`)
 })
 
 start()
