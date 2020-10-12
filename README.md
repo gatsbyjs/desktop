@@ -12,11 +12,11 @@ A proof-of-concept desktop app for managing your Gatsby sites.
 
 ## Installation
 
-:warning: Warning: This is alpha software and is under active development. Use at your own risk.
+:warning: Warning: This is alpha software, which means it is not expected to be stable. Please [report bugs and share your feedback](https://github.com/gatsbyjs/desktop/issues)
 
 ### Installing built packages
 
-1. Click on [releases](https://github.com/gatsbyjs/desktop/releases) and choose the installer for your platform. Mac users will need to right-click (or ctrl-click) on the app when you first launch it, until we have code signing set up. Windows users will need to agree to lots of Defender warnings.
+1. Click on [releases](https://github.com/gatsbyjs/desktop/releases/latest) and choose the installer for your platform.
 
 ### Installing from source
 
