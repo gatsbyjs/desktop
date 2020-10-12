@@ -1,7 +1,7 @@
 {
   "name": "gatsby-desktop",
   "description": "Gatsby Desktop",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/main.js",
   "homepage": "https://www.gatsbyjs.com/",
   "author": "<matt@gatsbyjs.com>",
