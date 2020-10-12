@@ -22,6 +22,7 @@ import { trackEvent } from "../util/telemetry"
 export interface ISiteMetadata {
   sitePath: string
   name?: string
+  gatsbyVersion?: string
   lastRun?: number
   pid?: number
   hash?: string
@@ -98,7 +99,7 @@ const STOPPED_STATES = [GlobalStatus.NotStarted, GlobalStatus.Failed, `STOPPED`]
 export class GatsbySite {
   siteStatus: ISiteStatus = DEFAULT_STATUS
   startedInDesktop?: boolean
-
+  gatsbyVersion?: string
   private _listeners = new Set<(status: ISiteStatus, action?: Action) => void>()
 
   constructor(

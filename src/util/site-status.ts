@@ -1,6 +1,6 @@
 import { Status, WorkerStatus } from "../controllers/site"
 import { GlobalStatus } from "./ipc-types"
-
+import satisfies from "semver/functions/satisfies"
 /* eslint-disable @typescript-eslint/naming-convention */
 export enum SiteDisplayStatus {
   Stopped = `STOPPED`,
@@ -8,6 +8,9 @@ export enum SiteDisplayStatus {
   Running = `RUNNING`,
   Errored = `ERRORED`,
 }
+
+export const MIN_ADMIN_VERSION = `>=2.24.17`
+
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export function getSiteDisplayStatus(status: Status): SiteDisplayStatus {
@@ -45,4 +48,8 @@ export function isRunning(status: Status): boolean {
 
 export function isStarting(status: Status): boolean {
   return status === GlobalStatus.InProgress
+}
+
+export function supportsAdmin(version: string): boolean {
+  return satisfies(version, MIN_ADMIN_VERSION, { includePrerelease: true })
 }

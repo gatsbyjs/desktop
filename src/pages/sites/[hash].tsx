@@ -6,6 +6,8 @@ import { Layout } from "../../components/layout"
 import { SiteActions } from "../../components/site-actions"
 import { GatsbySite } from "../../controllers/site"
 import { GlobalStatus } from "../../util/ipc-types"
+import { supportsAdmin } from "../../util/site-status"
+import { useMemo } from "react"
 
 export interface IProps {
   params: {
@@ -27,6 +29,30 @@ export default function SitePage({ params }: IProps): JSX.Element {
 
 function SiteDetails({ site }: { site: GatsbySite }): JSX.Element {
   const { running, port, status } = useSiteRunnerStatus(site)
+
+  const version = site.gatsbyVersion
+
+  const adminSupported = useMemo(() => version && supportsAdmin(version), [
+    version,
+  ])
+
+  if (!adminSupported) {
+    return (
+      <Flex
+        sx={{
+          alignItems: `center`,
+          justifyContent: `center`,
+          width: `100%`,
+          height: `100%`,
+        }}
+      >
+        <EmptyState
+          heading="Please upgrade Gatsby"
+          text={`Your site's version of Gatsby does not support Gatsby Admin. Please upgrade to the latest version`}
+        />
+      </Flex>
+    )
+  }
 
   return (
     <Flex sx={{ height: `100%` }}>

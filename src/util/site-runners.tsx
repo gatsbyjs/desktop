@@ -86,6 +86,7 @@ export function RunnerProvider({
             console.log(`loading existing site service config`)
             existingSite.name = site.name || existingSite.name
             existingSite.startedInDesktop = status?.startedInDesktop
+            existingSite.gatsbyVersion = site.gatsbyVersion
             existingSite.updateStatus({
               pid: site.pid,
             })
@@ -94,6 +95,7 @@ export function RunnerProvider({
           }
           console.log(`loading new site`, site)
           const newSite = new GatsbySite(site.sitePath, site.name)
+          newSite.gatsbyVersion = site.gatsbyVersion
           if (status) {
             newSite.updateStatus(status)
             newSite.startedInDesktop = status?.startedInDesktop

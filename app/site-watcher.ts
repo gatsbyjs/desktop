@@ -12,6 +12,7 @@ import { debounce } from "./utils"
 
 export interface ISiteMetadata {
   sitePath: string
+  gatsbyVersion?: string
   name?: string
   pid?: number
   lastRun?: number
@@ -76,6 +77,34 @@ export async function cleanupDeletedSites(
 let metadataWatcher: chokidar.FSWatcher
 let siteWatcher: chokidar.FSWatcher
 let lockWatcher: chokidar.FSWatcher
+
+export async function getSiteGatsbyVersion(
+  siteRoot: string
+): Promise<string | undefined> {
+  try {
+    // TODO: do this properly when https://github.com/electron/electron/pull/25891 lands
+    // const packageJsonPath = require.resolve(`gatsby/package.json`, {
+    //   paths: [siteRoot],
+    // })
+
+    // This may break in monorepos, but a bug in Electron means we can't do this properly
+    const packageJsonPath = path.join(
+      siteRoot,
+      `node_modules`,
+      `gatsby`,
+      `package.json`
+    )
+
+    if (!packageJsonPath) {
+      return undefined
+    }
+    const { version } = await fs.readJSON(packageJsonPath)
+    return version
+  } catch (e) {
+    console.warn(`Error loading site Gatsby package.json`, e)
+  }
+  return undefined
+}
 
 export async function watchSites(
   updateHandler: (siteList: Array<ISiteMetadata>) => void
@@ -144,6 +173,11 @@ export async function watchSites(
         json.hash = hash
       }
 
+      const gatsbyVersion = await getSiteGatsbyVersion(json.sitePath)
+      if (gatsbyVersion && gatsbyVersion !== json.gatsbyVersion) {
+        mergeSiteInfo(metadataPath, { gatsbyVersion })
+      }
+
       siteWatcher.add(sitePkgJsonPath)
     } catch (e) {
       console.log(`Couldn't load site`, e, sitePkgJsonPath)
@@ -154,24 +188,31 @@ export async function watchSites(
     update(sites)
   })
 
-  async function metadataChanged(path: string): Promise<void> {
-    const json = await getSiteInfo(path)
+  async function metadataChanged(metadataPath: string): Promise<void> {
+    const json = await getSiteInfo(metadataPath)
     if (json.name === `gatsby-desktop`) {
       return
     }
     console.log(`changed`, json)
-    const oldJson = JSON.stringify(sites.get(path) || {})
+    const oldJson = JSON.stringify(sites.get(metadataPath) || {})
     if (JSON.stringify(oldJson) === JSON.stringify(json)) {
       return
     }
 
     if (!json.hash) {
       // The hash is the folder name of the changed file, so grab that
-      const [hash] = path.split(`/`)
+      const [hash] = metadataPath.split(`/`)
       json.hash = hash
     }
 
-    sites.set(path, json)
+    // It's ok to only update this here, because the metadata is updated whenever
+    // develop is restarted.
+
+    const gatsbyVersion = await getSiteGatsbyVersion(json.sitePath)
+    if (gatsbyVersion && gatsbyVersion !== json.gatsbyVersion) {
+      mergeSiteInfo(metadataPath, { gatsbyVersion })
+    }
+    sites.set(metadataPath, json)
     update(sites)
   }
 
