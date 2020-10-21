@@ -82,18 +82,9 @@ export async function getSiteGatsbyVersion(
   siteRoot: string
 ): Promise<string | undefined> {
   try {
-    // TODO: do this properly when https://github.com/electron/electron/pull/25891 lands
-    // const packageJsonPath = require.resolve(`gatsby/package.json`, {
-    //   paths: [siteRoot],
-    // })
-
-    // This may break in monorepos, but a bug in Electron means we can't do this properly
-    const packageJsonPath = path.join(
-      siteRoot,
-      `node_modules`,
-      `gatsby`,
-      `package.json`
-    )
+    const packageJsonPath = require.resolve(`gatsby/package.json`, {
+      paths: [siteRoot],
+    })
 
     if (!packageJsonPath) {
       return undefined

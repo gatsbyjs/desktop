@@ -57,6 +57,7 @@ function makeWindow(): BrowserWindow {
       nodeIntegrationInWorker: true,
       nodeIntegration: true,
       webSecurity: false,
+      enableRemoteModule: true,
     },
   })
   listenForNewWindow(mainWindow.webContents)
