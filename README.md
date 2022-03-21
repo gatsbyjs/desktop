@@ -12,7 +12,7 @@ A proof-of-concept desktop app for managing your Gatsby sites.
 
 ## Installation
 
-:warning: Warning: This is alpha software, which means it is not expected to be stable. Please [report bugs and share your feedback](https://github.com/gatsbyjs/desktop/issues)
+:warning: Warning: Gatsby Desktop is no longer being maintained
 
 ### Installing built packages
 
